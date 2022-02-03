@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlazosPP</title>
+    
+</head>
+<body>
+    <h1>Calculador de Plazos de Medidas Cautelares</h1>
+    <label for="startDate">Fecha de detención:</label>
+<!-- llamo al módulo moment.js -->    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <input id="startDate" type="date">
+    <script>
+    document.getElementById('startDate').value = moment().format('YYYY-MM-DD');
+    </script>
+
+
+    <button id="btn">Calcular</button>
+
+
+    <div id="ulListado"></div>
+
+<!-- Script -->
+<script>
+
+
+
+let yearArr = [];
+let weekDayName;
+document.getElementById("btn").onclick = function() {nextYear()};
+
+
+function nextYear() {
+    yearArr = [];
+    let startDate = new Date(document.getElementById("startDate").value)
+    for (let i = 0; i <= 730 ; i++) {
+        let nextDate = new Date(startDate.setDate(startDate.getDate() + 1))
+        yearArr.push(nextDate);
+    }
+    agregarElementos();
+}
+
+function agregarElementos(){ 
+    document.getElementById("ulListado").innerHTML = "";
+    var lista=document.getElementById("ulListado"); 
+    
+    
+    yearArr.forEach(function(data,index){
+        var linew= document.createElement("li");    
+        getDayName(data.getDay());
+        var contenido = document.createTextNode(yearArr.indexOf(data) + " días: " +  weekDayName + ", " + data.getDate() + '/' +
+    (data.getMonth()+1) + '/' + data.getFullYear());
+        lista.appendChild(linew);
+        linew.appendChild(contenido);
+
+    })
+}
+
+function getDayName(value){
+    switch (value) {
+        case 0:
+            weekDayName = "Domingo";
+            break;
+        case 1:
+            weekDayName = "Lunes";
+            break;
+        case 2:
+            weekDayName = "Martes";
+            break;
+        case 3:
+            weekDayName = "Miércoles";
+            break;
+        case 4:
+            weekDayName = "Jueves";
+            break;
+        case 5:
+            weekDayName = "Viernes";
+            break;
+        case 6:
+            weekDayName = "Sábado";
+            break;
+    }
+
+}
+
+</script>
+</body>
+</html>
