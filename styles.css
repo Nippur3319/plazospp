@@ -1,0 +1,22 @@
+* {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+#ulListado {
+  padding-top: 10px;
+  width: 90%;
+  text-align: justify;
+}
+
+#ulListado li {
+  list-style: none;
+  padding-top: 10px;
+}
+
+.boldLi {
+  font-weight: bold;
+}
+
+.regularLi {
+  font-weight: normal;
+}
