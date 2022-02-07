@@ -2,8 +2,11 @@
 
 let today = new Date();
 let anio = today.getFullYear();
+let nextAnio = anio + 1
+let nextNextAnio = anio + 2
 let url = `http://nolaborables.com.ar/api/v2/feriados/${anio}?incluir=opcional`
-let urlNextYear = `http://nolaborables.com.ar/api/v2/feriados/${anio + 1}?incluir=opcional`
+let urlNextYear = `http://nolaborables.com.ar/api/v2/feriados/${nextAnio}?incluir=opcional`
+let urlNextNextYear = `http://nolaborables.com.ar/api/v2/feriados/${nextNextAnio}?incluir=opcional`
 
 let HTMLResponse = document.getElementById("app")
 let yearArr = [];
@@ -15,7 +18,7 @@ function nextYear() {
     
     yearArr = [];
     let startDate = new Date(document.getElementById("startDate").value)
-    for (let i = 0; i <= 365 ; i++) {
+    for (let i = 0; i <= 730 ; i++) {
         let newDate = {
             isDate: new Date(startDate.setDate(startDate.getDate() + 1)),
             dia: 0,
@@ -28,7 +31,8 @@ function nextYear() {
         
         yearArr.push(newDate);
     }
-    getHolidays();
+    getHolidays()
+    .then(getNextYearHolidays()).then(getNextNextYearHolidays());
     
 }
 
@@ -62,28 +66,69 @@ function getDayName(value){
 
 
 async function getHolidays() {
-    // ya funciona bien trae el array falta llenar el dom
-    
-    
+    // tengo el problema de que la api trae los feriados por año, no por fecha, es decir, no verifica fecha por fecha si el día es feriado o no, sino que te trae un array con todos los feriados del año que vos le pidas.
     fetch(url)
     .then(response => response.json())
     .then(holidaysArr => {
+        addHolidayYear(holidaysArr,anio);
+        //le agrega el anio del url al array de feriados
+
         updateNextYearInfo(yearArr,holidaysArr);
     })
 
 }
 
+
+async function getNextYearHolidays() {
+    
+    fetch(urlNextYear)
+    .then(response => response.json())
+    .then(nextYearHolidaysArr => {
+        addHolidayYear(nextYearHolidaysArr,nextAnio);
+        //le agrega el anio del url al array de feriados
+
+        updateNextYearInfo(yearArr,nextYearHolidaysArr);
+    })
+
+}
+
+async function getNextNextYearHolidays() {
+    
+    fetch(urlNextNextYear)
+    .then(response => response.json())
+    .then(nextNextYearHolidaysArr => {
+        addHolidayYear(nextNextYearHolidaysArr,nextNextAnio);
+        //le agrega el anio del url al array de feriados
+
+        updateNextYearInfo(yearArr,nextNextYearHolidaysArr);
+    })
+
+}
+
+
+
+function addHolidayYear(array,year){
+    for (let i = 0; i < array.length; i++) {
+        array[i].year = year;
+
+        
+    }
+    //console.log(JSON.stringify(array))
+}
+
+
 function updateNextYearInfo(year,holidays){
     for (let i = 0; i < year.length; i++) {
         for (let z = 0; z < holidays.length; z++) {
             
-            if (year[i].isDate.getMonth() + 1 == holidays[z].mes && year[i].isDate.getDate() ==  holidays[z].dia ) {
+            if (year[i].isDate.getMonth() + 1 == holidays[z].mes && year[i].isDate.getDate() ==  holidays[z].dia && year[i].isDate.getFullYear() ==  holidays[z].year) {
                 year[i].dia = holidays[z].dia;
                 year[i].id = holidays[z].id;
                 year[i].info = holidays[z].info;
                 year[i].mes = holidays[z].mes;
                 year[i].motivo = holidays[z].motivo;
                 year[i].tipo = holidays[z].tipo;
+                year[i].year = holidays[z].year;
 
                 
             }
@@ -92,7 +137,7 @@ function updateNextYearInfo(year,holidays){
         
     }
     yearArr = year;
-    console.log(JSON.stringify(yearArr));
+    //console.log(JSON.stringify(yearArr));
     agregarElementos(yearArr) ;
     
 } 
@@ -103,7 +148,7 @@ function updateNextYearInfo(year,holidays){
 
 
 function agregarElementos(arr){ 
-    console.log("a vergaston " + JSON.stringify(arr))
+    
     document.getElementById("ulListado").innerHTML = "";
     var lista=document.getElementById("ulListado"); 
     
@@ -112,9 +157,12 @@ function agregarElementos(arr){
         var linew= document.createElement("li");    
         getDayName(data.isDate.getDay());
         var contenido = document.createTextNode(
-            `${yearArr.indexOf(data)} días: ${weekDayName}, ${data.isDate.getDate()}/${data.isDate.getMonth() + 1}/${data.isDate.getFullYear()} ${data.id}  ${data.info}`) 
+            `${yearArr.indexOf(data)} días: ${weekDayName}, ${data.isDate.getDate()}/${data.isDate.getMonth() + 1}/${data.isDate.getFullYear()}`) 
+        
 
-        if (arr.indexOf(data) % 5 == 0 ) {
+            
+
+        if (arr.indexOf(data) % 10 == 0 ) {
                 linew.className = "boldLi";
         } else {
             linew.className = "regularLi";
@@ -123,5 +171,16 @@ function agregarElementos(arr){
         lista.appendChild(linew);
         linew.appendChild(contenido);
 
+        if(data.motivo != "") {
+            var infoFeriado = document.createTextNode(` Feriado: ${data.motivo}  (${data.tipo})`);
+            linew.appendChild(infoFeriado);
+            linew.className = "holidayLi";
+        }
+
+
+        if(weekDayName == "Sábado"  || weekDayName == "Domingo" ) {
+            
+            linew.className = "weekendLi";
+        }
     })
 }

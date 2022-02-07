@@ -15,8 +15,17 @@
 
 .boldLi {
   font-weight: bold;
+  font-size: larger;
 }
 
 .regularLi {
   font-weight: normal;
+}
+
+.holidayLi {
+  color: red;
+}
+
+.weekendLi {
+  color: dimgray;
 }
