@@ -1,13 +1,13 @@
 * {
-  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
 }
 
 #app {
-  font-size: small;
+  font-size: large;
   z-index: 100;
   position: fixed;
   top: 0;
-  left:0;
+  left: 0;
   padding: 10px 0 10px 0;
   background-color: cadetblue;
   width: 100%;
@@ -20,7 +20,7 @@
   padding: 20px 0 20px 0;
   width: 90%;
   text-align: justify;
-  font-size: small;
+  /* font-size: small;*/
 }
 
 #ulListado li {
@@ -29,17 +29,16 @@
   border-bottom: 1px solid #000;
 }
 
-.holidayLi, .weekendLi {
+.holidayLi,
+.weekendLi {
   color: red;
   background-color: rgb(255, 250, 250);
 }
 
-
-
 .boldLi {
   font-weight: bold;
-  
-  background-color:aliceblue;
+
+  background-color: aliceblue;
 }
 
 .regularLi {
