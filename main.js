@@ -181,7 +181,7 @@ function agregarElementos(arr){
              */
             
             let infoFeriado = document.createElement('p');
-            infoFeriado.innerHTML = `<a href="${data.info}"target="_blank"> ${data.motivo}</a>  (${data.tipo})<br>`
+            infoFeriado.innerHTML = `<a href="${data.info}"target="_blank"> ${data.motivo}</a> (${data.tipo})`
             linew.appendChild(infoFeriado);
             linew.className = "holidayLi";
         }
