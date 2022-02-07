@@ -161,9 +161,13 @@ function agregarElementos(arr){
         
 
             
+        if (arr.indexOf(data) == 0) {
+            linew.classList.add("invisible")
+        }
+
 
         if (arr.indexOf(data) % 10 == 0 ) {
-                linew.className = "boldLi";
+            linew.classList.add("boldLi");
         } else {
             linew.className = "regularLi";
         }
@@ -172,7 +176,12 @@ function agregarElementos(arr){
         linew.appendChild(contenido);
 
         if(data.motivo != "") {
-            var infoFeriado = document.createTextNode(` Feriado: ${data.motivo}  (${data.tipo})`);
+            /* var infoFeriado = document.createTextNode(` ${data.motivo}  (${data.tipo})`);
+            linew.appendChild(infoFeriado);
+             */
+            
+            let infoFeriado = document.createElement('p');
+            infoFeriado.innerHTML = `<a href="${data.info}"target="_blank"> ${data.motivo}</a>  (${data.tipo})<br>`
             linew.appendChild(infoFeriado);
             linew.className = "holidayLi";
         }
@@ -180,7 +189,7 @@ function agregarElementos(arr){
 
         if(weekDayName == "Sábado"  || weekDayName == "Domingo" ) {
             
-            linew.className = "weekendLi";
+            linew.classList.add("weekendLi");
         }
     })
 }

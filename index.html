@@ -9,23 +9,47 @@
     
 </head>
 <body>
-    <h1>Calculador de Plazos de Medidas Cautelares</h1>
-    <label for="startDate">Fecha de detención:</label>
-<!-- llamo al módulo moment.js -->    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <div id="app">
+        <h1>Calculador de Plazos</h1>
+        <label for="startDate">Inicio:</label>
+    <!-- llamo al módulo moment.js -->    
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        
+        <!-- defino el input con la fecha de hoy por defecto -->    
+        <input id="startDate" type="date">
+        <script>
+        document.getElementById('startDate').value = moment().format('YYYY-MM-DD');
+        </script>
 
-    <!-- defino el input con la fecha de hoy por defecto -->    
-    <input id="startDate" type="date">
-    <script>
-    document.getElementById('startDate').value = moment().format('YYYY-MM-DD');
-    </script>
-
+        
+        <button id="btn">Calcular</button>
+    </div>
     
-    <button id="btn">Calcular</button>
-    <div id="app"></div>
-    
 
-    <div id="ulListado"></div>
+    <div id="ulListado">
+        <!-- Se llena dinámicamente con JS-->
+        Esta es una herramienta de uso orientativo del Colegio de Jueces de Primera Instancia en lo Penal de Rosario. Consulte la normativa vigente.
+        <br>
+        <p> <i>* días feriados y no laborables según ley 21.329 y cctes:
+            1) son FERIADOS NACIONALES los siguientes:
+            1º DE ENERO: día de Año Nuevo;
+            VIERNES SANTO: idem; 2 DE ABRIL: día del Veterano y de los Caídos en la Guerra de Malvinas [24];
+            1º DE MAYO: día del Trabajador;
+            25 DE MAYO: día de la Revolución de Mayo (1810);
+            20 DE JUNIO: día de la Bandera (1820) [25];
+            9 DE JULIO: día de la Independencia (1816);
+            17 DE AGOSTO: día del aniversario de la muerte del “Capital General don José de SAN MARTIN” (1850) [26];
+            12 DE OCTUBRE: día de la Raza o día de la Hispanidad [27];
+            8 DE DICIEMBRE: día de la Inmaculada Concepción de la Virgen María [28];
+            25 DE DICIEMBRE: día de la Natividad del Señor;
+            CENSO NACIONAL: la ley 24.254 declaró “feriado nacional” el día de cada año en que se efectúe el Censo Nacional de Población y Vivienda [29].
+            
+            2) es DIA NO LABORABLE (en principio para todos los habitantes) el JUEVES SANTO
+            
+            3) son DIAS NO LABORABLES, “para todos los habitantes de la Nación Argentina que profesen la religión judía”, los días de “AÑO NUEVO JUDIO – Rosh Hashaná“ (2 días) y el “DIA DEL PERDON – Iom Kipur“ (1) día
+            
+            4) son DIAS NO LABORABLES, “para todos los habitantes de la Nación Argentina que profesen la religión islámica”, el día del “AÑO NUEVO MUSULMAN – Hégira”, el día posterior a la “CULMINACIÓN DEL AYUNO - Id Ai-Fitr”, y el “DIA DE LA FIESTA DEL SACRIFICIO - Id Al-Adha”</i>
+    </div>
     
 
 
