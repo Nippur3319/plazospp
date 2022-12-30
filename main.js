@@ -167,7 +167,6 @@ function agregarElementos(arr) {
       // formateo de múltiplos de 10 días
       if (arr.indexOf(data) % 10 === 0) {
         //linew.classList.add("boldLi");
-
         //creo un botón con un número de botón
         let btnDesplegar = document.createElement("button");
         let indexBtn = arr.indexOf(data);
@@ -182,9 +181,8 @@ function agregarElementos(arr) {
       } else if (mostrable.indexOf(arr.indexOf(data)) === -1) {
         // si no es múltiplo de 10 y no está en el array mostrable
         linew.className = "regularLi, invisible";
-      } else if (linew.className === "smallLi") {
-        linew.className = "regularLi, invisible";
       } else {
+        //si no es múltiplo de 10 y SÍ está en el array mostrable, le saco la class invisible y reduzco la font
         linew.className = "smallLi";
       }
 
@@ -198,14 +196,20 @@ function agregarElementos(arr) {
 
 // despliegue de ítems adyacentes al múltiplo de 10
 function desplegarItems(indice) {
-  mostrable = [];
+  if (!desplegadoFlag) {
+    mostrable = [];
 
-  //creo un array con el indice de los días que tengo que togglear
-  for (let i = indice; i < indice + 10; i++) {
-    console.log(yearArr[i]);
-    mostrable.push(i);
+    //creo un array con el indice de los días que tengo que togglear
+    for (let i = indice; i < indice + 10; i++) {
+      console.log(yearArr[i]);
+      mostrable.push(i);
+    }
+
+    desplegadoFlag = true;
+    agregarElementos(yearArr);
+  } else {
+    mostrable = [];
+    agregarElementos(yearArr);
+    desplegadoFlag = false;
   }
-  console.log(mostrable);
-  desplegadoFlag = true;
-  agregarElementos(yearArr);
 }
