@@ -5,15 +5,18 @@ let nextNextAnio = anio + 2;
 let url = `https://nolaborables.com.ar/api/v2/feriados/${anio}?incluir=opcional`;
 let urlNextYear = `https://nolaborables.com.ar/api/v2/feriados/${nextAnio}?incluir=opcional`;
 let urlNextNextYear = `https://nolaborables.com.ar/api/v2/feriados/${nextNextAnio}?incluir=opcional`;
-
 let HTMLResponse = document.getElementById("app");
 let yearArr = [];
 let weekDayName;
+let mostrable = [];
+let desplegadoFlag = false;
+
 document.getElementById("btn").onclick = function () {
   nextYear();
 };
 
 function nextYear() {
+  //creo un array con los próximos 730 días (2 años) desde la fecha de inicio de conteo
   yearArr = [];
   let startDate = new Date(document.getElementById("startDate").value);
   for (let i = 0; i <= 730; i++) {
@@ -123,46 +126,86 @@ function updateNextYearInfo(year, holidays) {
 }
 
 function agregarElementos(arr) {
+  //vacío el div ulistado
   document.getElementById("ulListado").innerHTML = "";
+
+  // creo una variable con el contenido de ulistado
   var lista = document.getElementById("ulListado");
 
-  arr.forEach(function (data, index) {
-    var linew = document.createElement("li");
-    getDayName(data.isDate.getDay());
-    var contenido = document.createTextNode(
-      `${yearArr.indexOf(
-        data
-      )} días: ${weekDayName}, ${data.isDate.getDate()}/${
-        data.isDate.getMonth() + 1
-      }/${data.isDate.getFullYear()}`
-    );
+  // para cada elemento del array ejecuto una función anónima que crea un li linew y lo llena con el contenido
+  arr.forEach(
+    function (data) {
+      var linew = document.createElement("li");
 
-    if (arr.indexOf(data) == 0) {
-      linew.classList.add("invisible");
-    }
+      getDayName(data.isDate.getDay());
 
-    if (arr.indexOf(data) % 10 == 0) {
-      linew.classList.add("boldLi");
-    } else {
-      linew.className = "regularLi";
-    }
+      // formateo la línea standard
+      var contenido = document.createTextNode(
+        `${yearArr.indexOf(
+          data
+        )} días:     ${weekDayName}, ${data.isDate.getDate()}/${
+          data.isDate.getMonth() + 1
+        }/${data.isDate.getFullYear()} `
+      );
 
-    lista.appendChild(linew);
-    linew.appendChild(contenido);
+      // formateo de feriados
+      if (data.motivo != "") {
+        let infoFeriado = document.createElement("p");
+        infoFeriado.innerHTML = `<a href="${data.info}"target="_blank"> ${data.motivo}</a> (${data.tipo})`;
+        linew.appendChild(infoFeriado);
+        linew.className = "holidayLi";
+      }
 
-    if (data.motivo != "") {
-      /* var infoFeriado = document.createTextNode(` ${data.motivo}  (${data.tipo})`);
-            linew.appendChild(infoFeriado);
-             */
+      lista.appendChild(linew);
+      linew.appendChild(contenido);
 
-      let infoFeriado = document.createElement("p");
-      infoFeriado.innerHTML = `<a href="${data.info}"target="_blank"> ${data.motivo}</a> (${data.tipo})`;
-      linew.appendChild(infoFeriado);
-      linew.className = "holidayLi";
-    }
+      // invisibilización del día de inicio de plazo
+      if (arr.indexOf(data) === 0) {
+        linew.classList.add("invisible");
+      }
 
-    if (weekDayName == "Sábado" || weekDayName == "Domingo") {
-      linew.classList.add("weekendLi");
-    }
-  });
+      // formateo de múltiplos de 10 días
+      if (arr.indexOf(data) % 10 === 0) {
+        //linew.classList.add("boldLi");
+
+        //creo un botón con un número de botón
+        let btnDesplegar = document.createElement("button");
+        let indexBtn = arr.indexOf(data);
+        btnDesplegar.setAttribute("onclick", `desplegarItems(${indexBtn})`);
+        btnDesplegar.setAttribute("id", "btnDespegar");
+
+        btnDesplegar.innerHTML = `
+          <img id="imgDesplegar" src="desplegar.png" alt="desplegar" width="10">
+        
+        `;
+        linew.appendChild(btnDesplegar);
+      } else if (mostrable.indexOf(arr.indexOf(data)) === -1) {
+        // si no es múltiplo de 10 y no está en el array mostrable
+        linew.className = "regularLi, invisible";
+      } else if (linew.className === "smallLi") {
+        linew.className = "regularLi, invisible";
+      } else {
+        linew.className = "smallLi";
+      }
+
+      // formateo de Sábados y Domingos
+      if (weekDayName == "Sábado" || weekDayName == "Domingo") {
+        linew.classList.add("weekendLi");
+      }
+    } //cierra la función anónima
+  ); //cierra el forEach;
+} // cierra agregarElementos
+
+// despliegue de ítems adyacentes al múltiplo de 10
+function desplegarItems(indice) {
+  mostrable = [];
+
+  //creo un array con el indice de los días que tengo que togglear
+  for (let i = indice; i < indice + 10; i++) {
+    console.log(yearArr[i]);
+    mostrable.push(i);
+  }
+  console.log(mostrable);
+  desplegadoFlag = true;
+  agregarElementos(yearArr);
 }

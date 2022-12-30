@@ -16,6 +16,11 @@
   text-align: center;
 }
 
+#imgPlazos {
+  width: 100%;
+
+}
+
 #ulListado {
   position: absolute;
   top: 120px;
@@ -57,4 +62,13 @@
 
 p {
   font-size: smaller;
+}
+
+.smallLi{
+  font-size: smaller;
+}
+
+#btnDespegar{
+  text-decoration: none;
+  border: none;
 }
