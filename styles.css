@@ -22,16 +22,18 @@
 }
 
 #ulListado {
-  position: absolute;
+  position: relative;
   top: 120px;
-  padding: 10px;
-  width: 90%;
+  margin: 0px;
+  padding: 0px;
+  width: 100%;
   text-align: center;
   /* font-size: small;*/
 }
 
 #ulListado li {
   list-style: none;
+  margin: 0px;
   padding: 10px 0 10px 0;
   border-bottom: 1px solid #000;
 }
