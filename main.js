@@ -8,7 +8,7 @@ let urlNextNextYear = `https://nolaborables.com.ar/api/v2/feriados/${nextNextAni
 let HTMLResponse = document.getElementById("app");
 let yearArr = [];
 let weekDayName;
-let mostrable = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+let mostrable = [2, 3, 4, 5, 6, 7, 8, 9];
 let desplegadoFlag = false;
 let btnLimpiar = document.getElementById("btnLimpiar");
 
@@ -202,7 +202,7 @@ function agregarElementos(arr) {
 // despliegue de ítems adyacentes al múltiplo de 10
 function desplegarItems(indice) {
   if (!desplegadoFlag) {
-    mostrable = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    mostrable = [2, 3, 4, 5, 6, 7, 8, 9];
 
     //creo un array con el indice de los días que tengo que togglear
     for (let i = indice; i < indice + 10; i++) {
@@ -213,7 +213,7 @@ function desplegarItems(indice) {
     desplegadoFlag = true;
     agregarElementos(yearArr);
   } else {
-    mostrable = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    mostrable = [2, 3, 4, 5, 6, 7, 8, 9];
     agregarElementos(yearArr);
     desplegadoFlag = false;
   }
