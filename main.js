@@ -8,7 +8,7 @@ let urlNextNextYear = `https://nolaborables.com.ar/api/v2/feriados/${nextNextAni
 let HTMLResponse = document.getElementById("app");
 let yearArr = [];
 let weekDayName;
-let mostrable = [];
+let mostrable = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 let desplegadoFlag = false;
 let btnLimpiar = document.getElementById("btnLimpiar");
 
@@ -145,22 +145,23 @@ function agregarElementos(arr) {
 
       // formateo la línea standard
       var contenido = document.createElement("p");
-      contenido.innerHTML = 
-      `${yearArr.indexOf(data)} días:     ${weekDayName}, ${data.isDate.getDate()}/${
-          data.isDate.getMonth() + 1
-        }/${data.isDate.getFullYear()} `
-      ;
-      
+      contenido.innerHTML = `${yearArr.indexOf(
+        data
+      )} días:     ${weekDayName}, ${data.isDate.getDate()}/${
+        data.isDate.getMonth() + 1
+      }/${data.isDate.getFullYear()} `;
+
       linew.appendChild(contenido);
-      
+
       // formateo de feriados
       if (data.motivo != "") {
         let infoFeriado = document.createElement("p");
         infoFeriado.innerHTML = `<a href="${data.info}"target="_blank"> ${data.motivo}</a> (${data.tipo})`;
         linew.appendChild(infoFeriado);
-        linew.className = "holidayLi";
+        //linew.className = "holidayLi";
+        linew.classList.add("weekendLi");
       }
-      
+
       lista.appendChild(linew);
 
       // invisibilización del día de inicio de plazo
@@ -168,10 +169,10 @@ function agregarElementos(arr) {
         linew.classList.add("invisible");
       }
 
-      // formateo de múltiplos de 10 días
+      // formateo de múltiplos de 10 días y del día 1
       if (arr.indexOf(data) % 10 === 0) {
         //linew.classList.add("boldLi");
-        //creo un botón con un número de botón
+        //creo un botón para desplegar los siguientes 10 elementos
         let btnDesplegar = document.createElement("button");
         let indexBtn = arr.indexOf(data);
         btnDesplegar.setAttribute("onclick", `desplegarItems(${indexBtn})`);
@@ -187,7 +188,7 @@ function agregarElementos(arr) {
         linew.className = "regularLi, invisible";
       } else {
         //si no es múltiplo de 10 y SÍ está en el array mostrable, le saco la class invisible y reduzco la font
-        linew.className = "smallLi";
+        linew.classList.add("smallLi");
       }
 
       // formateo de Sábados y Domingos
@@ -201,7 +202,7 @@ function agregarElementos(arr) {
 // despliegue de ítems adyacentes al múltiplo de 10
 function desplegarItems(indice) {
   if (!desplegadoFlag) {
-    mostrable = [];
+    mostrable = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
     //creo un array con el indice de los días que tengo que togglear
     for (let i = indice; i < indice + 10; i++) {
@@ -212,7 +213,7 @@ function desplegarItems(indice) {
     desplegadoFlag = true;
     agregarElementos(yearArr);
   } else {
-    mostrable = [];
+    mostrable = [1, 2, 3, 4, 5, 6, 7, 8, 9];
     agregarElementos(yearArr);
     desplegadoFlag = false;
   }
@@ -221,6 +222,6 @@ function desplegarItems(indice) {
 function limpiarListado() {
   mostrable = [];
   document.getElementById("ulListado").innerHTML =
-  '<img id="imgPlazos" src="plazos-tribunal.jpg" alt="Plazos Tribunal"><br></br>';
+    '<img id="imgPlazos" src="plazos-tribunal.jpg" alt="Plazos Tribunal"><br></br>';
   btnLimpiar.disabled = true;
 }
