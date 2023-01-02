@@ -11,7 +11,7 @@
   /*padding: 10px 0 10px 0;*/
   padding-bottom: 10px;
   margin-bottom: 10px;
-  background-color: rgb(173, 125, 3);
+  background-color: rgb(149, 159, 245);
   width: 100%;
   text-align: center;
 }
@@ -22,6 +22,7 @@
 }
 
 #ulListado {
+  color: #00AB66;
   position: relative;
   top: 120px;
   margin: 0px;
@@ -29,6 +30,7 @@
   width: 100%;
   text-align: center;
   /* font-size: small;*/
+  /*background-color: rgb(196, 242, 204);*/
 }
 
 #ulListado li {
@@ -41,7 +43,7 @@
 .holidayLi,
 .weekendLi {
   color: red;
-  background-color: rgb(255, 250, 250);
+  /*background-color: rgb(247, 203, 211);*/
 }
 
 .boldLi {
@@ -62,17 +64,15 @@
   width: 140px;
 }
 
-p {
-  font-size: smaller;
-}
 
 .smallLi{
   font-size: smaller;
 }
 
-#btnDespegar{
+#btnDesplegar{
   text-decoration: none;
   border: none;
   color: #fff;
   background-color: #fff;
 }
+

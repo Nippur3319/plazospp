@@ -10,8 +10,9 @@ let yearArr = [];
 let weekDayName;
 let mostrable = [];
 let desplegadoFlag = false;
+let btnLimpiar = document.getElementById("btnLimpiar");
 
-document.getElementById("btn").onclick = function () {
+document.getElementById("btnCalcular").onclick = function () {
   nextYear();
 };
 
@@ -126,6 +127,9 @@ function updateNextYearInfo(year, holidays) {
 }
 
 function agregarElementos(arr) {
+  //muestro el botón limpiar
+  btnLimpiar.removeAttribute("disabled");
+
   //vacío el div ulistado
   document.getElementById("ulListado").innerHTML = "";
 
@@ -140,14 +144,15 @@ function agregarElementos(arr) {
       getDayName(data.isDate.getDay());
 
       // formateo la línea standard
-      var contenido = document.createTextNode(
-        `${yearArr.indexOf(
-          data
-        )} días:     ${weekDayName}, ${data.isDate.getDate()}/${
+      var contenido = document.createElement("p");
+      contenido.innerHTML = 
+      `${yearArr.indexOf(data)} días:     ${weekDayName}, ${data.isDate.getDate()}/${
           data.isDate.getMonth() + 1
         }/${data.isDate.getFullYear()} `
-      );
-
+      ;
+      
+      linew.appendChild(contenido);
+      
       // formateo de feriados
       if (data.motivo != "") {
         let infoFeriado = document.createElement("p");
@@ -155,9 +160,8 @@ function agregarElementos(arr) {
         linew.appendChild(infoFeriado);
         linew.className = "holidayLi";
       }
-
+      
       lista.appendChild(linew);
-      linew.appendChild(contenido);
 
       // invisibilización del día de inicio de plazo
       if (arr.indexOf(data) === 0) {
@@ -171,7 +175,7 @@ function agregarElementos(arr) {
         let btnDesplegar = document.createElement("button");
         let indexBtn = arr.indexOf(data);
         btnDesplegar.setAttribute("onclick", `desplegarItems(${indexBtn})`);
-        btnDesplegar.setAttribute("id", "btnDespegar");
+        btnDesplegar.setAttribute("id", "btnDesplegar");
 
         btnDesplegar.innerHTML = `
           <img id="imgDesplegar" src="desplegar.png" alt="desplegar" width="10">
@@ -212,4 +216,11 @@ function desplegarItems(indice) {
     agregarElementos(yearArr);
     desplegadoFlag = false;
   }
+}
+
+function limpiarListado() {
+  mostrable = [];
+  document.getElementById("ulListado").innerHTML =
+  '<img id="imgPlazos" src="plazos-tribunal.jpg" alt="Plazos Tribunal"><br></br>';
+  btnLimpiar.disabled = true;
 }
