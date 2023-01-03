@@ -8,9 +8,11 @@ let urlNextNextYear = `https://nolaborables.com.ar/api/v2/feriados/${nextNextAni
 let HTMLResponse = document.getElementById("app");
 let yearArr = [];
 let weekDayName;
+
 let mostrable = [2, 3, 4, 5, 6, 7, 8, 9];
 let desplegadoFlag = false;
 let btnLimpiar = document.getElementById("btnLimpiar");
+
 
 document.getElementById("btnCalcular").onclick = function () {
   nextYear();
@@ -139,7 +141,7 @@ function agregarElementos(arr) {
   // para cada elemento del array ejecuto una función anónima que crea un li linew y lo llena con el contenido
   arr.forEach(
     function (data) {
-      var linew = document.createElement("li");
+      let linew = document.createElement("li");
 
       getDayName(data.isDate.getDay());
 
@@ -173,16 +175,17 @@ function agregarElementos(arr) {
       if (arr.indexOf(data) % 10 === 0) {
         //linew.classList.add("boldLi");
         //creo un botón para desplegar los siguientes 10 elementos
-        let btnDesplegar = document.createElement("button");
         let indexBtn = arr.indexOf(data);
-        btnDesplegar.setAttribute("onclick", `desplegarItems(${indexBtn})`);
-        btnDesplegar.setAttribute("id", "btnDesplegar");
-
-        btnDesplegar.innerHTML = `
-          <img id="imgDesplegar" src="desplegar.png" alt="desplegar" width="10">
         
-        `;
+        let btnDesplegar = document.createElement("button");
+        btnDesplegar.setAttribute("onclick", `desplegarItems(${indexBtn})`);
+        btnDesplegar.setAttribute("id", `btnDesplegar${indexBtn}`);
+        btnDesplegar.setAttribute("class", "btnDesplegar");
+        
+        
+        btnDesplegar.innerHTML = `<img id="imgDesplegar" src="desplegar.png" alt="desplegar" width="10">`;
         linew.appendChild(btnDesplegar);
+
       } else if (mostrable.indexOf(arr.indexOf(data)) === -1) {
         // si no es múltiplo de 10 y no está en el array mostrable
         linew.className = "regularLi, invisible";
@@ -201,12 +204,20 @@ function agregarElementos(arr) {
 
 // despliegue de ítems adyacentes al múltiplo de 10
 function desplegarItems(indice) {
+  let lineaDesplegada = document.getElementById('li');
+  let btnDesplegarPresionado = document.getElementById(`btnDesplegar${indice}`)
+  btnDesplegarPresionado.innerHTML = `<img id="imgContraer" src="contraer.png" alt="contraer" width="10">`;
+  console.log(btnDesplegarPresionado)
+  //lineaDesplegada.appendChild(btnDesplegarPresionado);
+
+
+
   if (!desplegadoFlag) {
     mostrable = [2, 3, 4, 5, 6, 7, 8, 9];
 
     //creo un array con el indice de los días que tengo que togglear
     for (let i = indice; i < indice + 10; i++) {
-      console.log(yearArr[i]);
+      //console.log(yearArr[i]);
       mostrable.push(i);
     }
 
@@ -220,7 +231,7 @@ function desplegarItems(indice) {
 }
 
 function limpiarListado() {
-  mostrable = [];
+  mostrable = [2, 3, 4, 5, 6, 7, 8, 9];
   document.getElementById("ulListado").innerHTML =
     '<img id="imgPlazos" src="plazos-tribunal.jpg" alt="Plazos Tribunal"><br></br>';
   btnLimpiar.disabled = true;

@@ -18,6 +18,7 @@ h1{
   margin-bottom: 10px;
   background-color: rgb(149, 159, 245);
   width: 100%;
+  height: 111px;
   text-align: center;
 }
 
@@ -42,7 +43,7 @@ h1{
   list-style: none;
   margin: 0px;
   padding: 10px 0 10px 0;
-  border-bottom: 1px solid #000;
+  border-top: 1px solid #000;
 }
 
 
@@ -53,7 +54,7 @@ h1{
 }
 
 .regularLi {
-  font-size: large;
+  font-size: 10vw;
   font-weight: normal;
 }
 
@@ -66,11 +67,13 @@ h1{
 }
 
 
-.smallLi{
+#ulListado li.smallLi{
   font-size: smaller;
+  border-top: 0.7px dotted #000;
+
 }
 
-#btnDesplegar{
+.btnDesplegar{
   text-decoration: none;
   border: none;
   color: #fff;
