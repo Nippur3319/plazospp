@@ -10,7 +10,7 @@ let yearArr = [];
 let weekDayName;
 
 let mostrable = [2, 3, 4, 5, 6, 7, 8, 9];
-let desplegadoFlag = false;
+
 let btnLimpiar = document.getElementById("btnLimpiar");
 
 
@@ -204,30 +204,16 @@ function agregarElementos(arr) {
 
 // despliegue de ítems adyacentes al múltiplo de 10
 function desplegarItems(indice) {
-  let lineaDesplegada = document.getElementById('li');
-  let btnDesplegarPresionado = document.getElementById(`btnDesplegar${indice}`)
-  btnDesplegarPresionado.innerHTML = `<img id="imgContraer" src="contraer.png" alt="contraer" width="10">`;
-  console.log(btnDesplegarPresionado)
-  //lineaDesplegada.appendChild(btnDesplegarPresionado);
 
 
-
-  if (!desplegadoFlag) {
-    mostrable = [2, 3, 4, 5, 6, 7, 8, 9];
-
-    //creo un array con el indice de los días que tengo que togglear
-    for (let i = indice; i < indice + 10; i++) {
-      //console.log(yearArr[i]);
-      mostrable.push(i);
-    }
-
-    desplegadoFlag = true;
-    agregarElementos(yearArr);
-  } else {
-    mostrable = [2, 3, 4, 5, 6, 7, 8, 9];
-    agregarElementos(yearArr);
-    desplegadoFlag = false;
+  //completo el array mostrable el indice de los días que tengo que togglear
+  for (let i = indice; i < indice + 10; i++) {
+    //console.log(yearArr[i]);
+    mostrable.push(i);
   }
+
+  agregarElementos(yearArr);
+ 
 }
 
 function limpiarListado() {
