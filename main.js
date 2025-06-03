@@ -1,4 +1,4 @@
-// main.js - Versión Refactorizada
+// main.js - Versión Refactorizada COMPLETA con TOGGLE en desplegarItems
 
 // --- Variables Globales ---
 const today = new Date();
@@ -6,18 +6,17 @@ const anio = today.getFullYear();
 const nextAnio = anio + 1;
 const nextNextAnio = anio + 2;
 
-// URLs apuntando al proxy en Vercel (o Netlify)
 const url = `/api/feriados?anio=${anio}&incluir=opcional`;
 const urlNextYear = `/api/feriados?anio=${nextAnio}&incluir=opcional`;
 const urlNextNextYear = `/api/feriados?anio=${nextNextAnio}&incluir=opcional`;
 
-const HTMLResponse = document.getElementById("app"); // Considera si realmente usas esta variable
-let yearArr = []; // Array principal que contendrá los objetos de fecha e información de feriados
-let mostrable = [2, 3, 4, 5, 6, 7, 8, 9]; // Días inicialmente visibles (lógica de UI)
+const HTMLResponse = document.getElementById("app");
+let yearArr = [];
+let mostrable = [2, 3, 4, 5, 6, 7, 8, 9];
 
 const btnLimpiar = document.getElementById("btnLimpiar");
 const btnCalcular = document.getElementById("btnCalcular");
-const ulListado = document.getElementById("ulListado"); // Obtener una vez para reutilizar
+const ulListado = document.getElementById("ulListado");
 
 // --- Event Listeners ---
 if (btnCalcular) {
@@ -33,29 +32,23 @@ if (btnLimpiar) {
 }
 
 // --- Lógica Principal ---
-
-/**
- * Prepara el array de días y luego obtiene y procesa los feriados.
- */
 async function nextYear() {
-  yearArr = []; // Reiniciar el array global de días
+  yearArr = [];
   const startDateInput = document.getElementById("startDate").value;
 
   if (!startDateInput) {
     console.warn("Fecha de inicio no seleccionada.");
-    ulListado.innerHTML =
-      '<p class="error-message">Por favor, selecciona una fecha de inicio.</p>';
+    if (ulListado)
+      ulListado.innerHTML =
+        '<p class="error-message">Por favor, selecciona una fecha de inicio.</p>';
     return;
   }
 
-  const initialStartDate = new Date(startDateInput); // Fecha base para los cálculos
+  const initialStartDate = new Date(startDateInput);
 
-  // Crear el array base de días (731 días para cubrir 2 años completos desde el día siguiente)
   for (let i = 0; i < 731; i++) {
-    // Loop 731 veces para incluir el día final
     const currentDate = new Date(initialStartDate);
-    currentDate.setDate(initialStartDate.getDate() + i + 1); // Sumar i+1 días a la fecha de inicio
-
+    currentDate.setDate(initialStartDate.getDate() + i + 1);
     yearArr.push({
       isDate: currentDate,
       dia: 0,
@@ -64,43 +57,34 @@ async function nextYear() {
       mes: 0,
       motivo: "",
       tipo: "",
-      year: 0, // Inicializar propiedades
+      year: 0,
     });
   }
 
-  // Mostrar mensaje de carga y deshabilitar botón de limpiar
-  ulListado.innerHTML = "<p>Cargando feriados, por favor espera...</p>";
-  btnLimpiar.disabled = true;
+  if (ulListado)
+    ulListado.innerHTML = "<p>Cargando feriados, por favor espera...</p>";
+  if (btnLimpiar) btnLimpiar.disabled = true;
 
   try {
-    // Ejecutar todas las solicitudes de feriados en paralelo
     const results = await Promise.all([
       getHolidaysData(url, anio),
       getHolidaysData(urlNextYear, nextAnio),
       getHolidaysData(urlNextNextYear, nextNextAnio),
     ]);
 
-    // Actualizar la información en yearArr con todos los feriados obtenidos.
-    // results[0] son los feriados del año actual, results[1] del siguiente, etc.
     if (results[0]) updateHolidayInfoInYearArr(yearArr, results[0]);
     if (results[1]) updateHolidayInfoInYearArr(yearArr, results[1]);
     if (results[2]) updateHolidayInfoInYearArr(yearArr, results[2]);
 
-    // Dibujar la lista UNA SOLA VEZ con toda la información
     agregarElementos(yearArr);
-    if (btnLimpiar) btnLimpiar.removeAttribute("disabled"); // Habilitar después de cargar
+    if (btnLimpiar) btnLimpiar.removeAttribute("disabled");
   } catch (error) {
     console.error("Fallo una o más solicitudes de feriados:", error);
-    ulListado.innerHTML = `<p class="error-message">Error al cargar la información de feriados: ${error.message}. Por favor, intente más tarde.</p>`;
+    if (ulListado)
+      ulListado.innerHTML = `<p class="error-message">Error al cargar la información de feriados: ${error.message}. Por favor, intente más tarde.</p>`;
   }
 }
 
-/**
- * Función genérica para obtener datos de feriados desde una URL.
- * @param {string} fetchUrl La URL del proxy para obtener los feriados.
- * @param {number} yearForHolidayData El año para el cual se solicitan los feriados.
- * @returns {Promise<Array<Object>>} Una promesa que resuelve con el array de feriados procesado.
- */
 async function getHolidaysData(fetchUrl, yearForHolidayData) {
   try {
     const response = await fetch(fetchUrl);
@@ -117,33 +101,24 @@ async function getHolidaysData(fetchUrl, yearForHolidayData) {
       );
     }
     const holidaysArr = await response.json();
-    addHolidayYearProperty(holidaysArr, yearForHolidayData); // Añade la propiedad 'year' a cada feriado
+    addHolidayYearProperty(holidaysArr, yearForHolidayData);
     return holidaysArr;
   } catch (error) {
     console.error(
       `Error obteniendo feriados para ${yearForHolidayData} desde ${fetchUrl}:`,
       error
     );
-    throw error; // Re-lanzar para que Promise.all lo capture y maneje centralizadamente.
+    throw error;
   }
 }
 
-/**
- * Añade la propiedad 'year' a cada objeto en un array de feriados.
- * @param {Array<Object>} holidaysArray Array de objetos de feriados.
- * @param {number} year El año a asignar.
- */
 function addHolidayYearProperty(holidaysArray, year) {
+  if (!holidaysArray || !Array.isArray(holidaysArray)) return; // Verificar si es un array
   for (let i = 0; i < holidaysArray.length; i++) {
-    holidaysArray[i].year = year;
+    if (holidaysArray[i]) holidaysArray[i].year = year;
   }
 }
 
-/**
- * Actualiza el array principal `yearArr` con la información de los feriados.
- * @param {Array<Object>} targetYearArr El array de días a actualizar (normalmente el global `yearArr`).
- * @param {Array<Object>} holidaysFromApi Array de feriados obtenidos de la API para un año específico.
- */
 function updateHolidayInfoInYearArr(targetYearArr, holidaysFromApi) {
   if (!holidaysFromApi) {
     console.warn(
@@ -158,7 +133,7 @@ function updateHolidayInfoInYearArr(targetYearArr, holidaysFromApi) {
       if (
         dayObject.isDate.getMonth() + 1 === holiday.mes &&
         dayObject.isDate.getDate() === holiday.dia &&
-        dayObject.isDate.getFullYear() === holiday.year // holiday.year fue añadido por addHolidayYearProperty
+        dayObject.isDate.getFullYear() === holiday.year
       ) {
         dayObject.dia = holiday.dia;
         dayObject.id = holiday.id;
@@ -166,17 +141,12 @@ function updateHolidayInfoInYearArr(targetYearArr, holidaysFromApi) {
         dayObject.mes = holiday.mes;
         dayObject.motivo = holiday.motivo;
         dayObject.tipo = holiday.tipo;
-        dayObject.year = holiday.year; // Asignar también el año del feriado al objeto día
+        dayObject.year = holiday.year;
       }
     }
   }
 }
 
-/**
- * Obtiene el nombre del día de la semana.
- * @param {number} dayIndex El índice del día (0 para Domingo, 1 para Lunes, etc.).
- * @returns {string} El nombre del día.
- */
 function getDayName(dayIndex) {
   const dayNames = [
     "Domingo",
@@ -190,21 +160,15 @@ function getDayName(dayIndex) {
   return dayNames[dayIndex] || "Día Desconocido";
 }
 
-/**
- * Renderiza los elementos de la lista en el DOM.
- * @param {Array<Object>} arr El array de días (`yearArr`) a mostrar.
- */
 function agregarElementos(arr) {
   if (btnLimpiar) btnLimpiar.removeAttribute("disabled");
-  if (!ulListado) return; // Salir si el elemento de la lista no existe
+  if (!ulListado) return;
 
-  ulListado.innerHTML = ""; // Limpiar contenido anterior
+  ulListado.innerHTML = "";
 
   arr.forEach((data, index) => {
-    // El segundo parámetro de forEach es el índice
     const listItem = document.createElement("li");
-    const dayIndexInYearArr = index; // Usar el índice del forEach que es más fiable que indexOf en arrays de objetos
-
+    const dayIndexInYearArr = index;
     const currentWeekDayName = getDayName(data.isDate.getDay());
 
     const contenidoP = document.createElement("p");
@@ -217,16 +181,14 @@ function agregarElementos(arr) {
       const infoFeriadoP = document.createElement("p");
       infoFeriadoP.innerHTML = `<a href="${data.info}" target="_blank" rel="noopener noreferrer">${data.motivo}</a> (${data.tipo})`;
       listItem.appendChild(infoFeriadoP);
-      listItem.classList.add("holidayLi"); // Clase específica para feriados
+      listItem.classList.add("holidayLi");
     }
 
-    // Lógica de visibilidad y formato
     if (dayIndexInYearArr === 0) {
       listItem.classList.add("invisible");
     }
 
     if (dayIndexInYearArr % 10 === 0 && dayIndexInYearArr !== 0) {
-      // No añadir botón al día 0
       const btnDesplegar = document.createElement("button");
       btnDesplegar.setAttribute(
         "onclick",
@@ -236,8 +198,8 @@ function agregarElementos(arr) {
       btnDesplegar.classList.add("btnDesplegar");
 
       const imgDesplegar = document.createElement("img");
-      imgDesplegar.src = "desplegar.png"; // Asegúrate que esta imagen exista en la ruta correcta
-      imgDesplegar.alt = "desplegar";
+      imgDesplegar.src = "desplegar.png";
+      imgDesplegar.alt = "desplegar"; // Se podría cambiar el alt text dinámicamente
       imgDesplegar.width = 10;
       btnDesplegar.appendChild(imgDesplegar);
       listItem.appendChild(btnDesplegar);
@@ -253,46 +215,82 @@ function agregarElementos(arr) {
     if (currentWeekDayName === "Sábado" || currentWeekDayName === "Domingo") {
       listItem.classList.add("weekendLi");
     }
-
     ulListado.appendChild(listItem);
   });
 }
 
 /**
- * Muestra más ítems en la lista (lógica de UI para desplegar).
- * @param {number} indice El índice base desde el cual mostrar más ítems.
+ * Muestra u oculta un bloque de ítems en la lista.
+ * @param {number} indiceBase El índice del elemento que contiene el botón "desplegar" (ej. 0, 10, 20...).
  */
-function desplegarItems(indice) {
-  // Añadir los próximos 9 días (del indice+1 al indice+9) al array 'mostrable'
-  // sin duplicados y asegurándose de no exceder los límites de yearArr.
+function desplegarItems(indiceBase) {
+  const itemsDelBloque = [];
   for (let i = 1; i < 10; i++) {
-    const itemIndexToShow = indice + i;
-    if (
-      itemIndexToShow < yearArr.length &&
-      mostrable.indexOf(itemIndexToShow) === -1
-    ) {
-      mostrable.push(itemIndexToShow);
+    // Items del +1 al +9 del índice base
+    const itemIndex = indiceBase + i;
+    if (itemIndex < yearArr.length) {
+      itemsDelBloque.push(itemIndex);
+    } else {
+      break;
     }
   }
-  // Reordenar 'mostrable' puede ser útil si el orden importa para otra lógica, aunque aquí no parece crucial.
-  // mostrable.sort((a, b) => a - b);
-  agregarElementos(yearArr); // Re-renderizar la lista con los nuevos ítems visibles
+
+  if (itemsDelBloque.length === 0) {
+    agregarElementos(yearArr); // No hay items que mostrar/ocultar, pero re-renderizar por si acaso
+    return;
+  }
+
+  // Verificar si el primer ítem del bloque (o cualquiera, en realidad) ya está en 'mostrable'
+  // para determinar si la sección está actualmente expandida.
+  const estaActualmenteExpandido = mostrable.includes(itemsDelBloque[0]);
+
+  if (estaActualmenteExpandido) {
+    // COLAPSAR LA SECCIÓN: Quitar estos ítems de 'mostrable'
+    mostrable = mostrable.filter(
+      (itemIdx) => !itemsDelBloque.includes(itemIdx)
+    );
+  } else {
+    // EXPANDIR LA SECCIÓN: Añadir estos ítems a 'mostrable' (evitando duplicados)
+    itemsDelBloque.forEach((itemIdx) => {
+      if (!mostrable.includes(itemIdx)) {
+        mostrable.push(itemIdx);
+      }
+    });
+  }
+  agregarElementos(yearArr); // Re-renderizar la lista para reflejar los cambios
+
+  // Opcional: Cambiar el ícono del botón (necesitarías una imagen 'colapsar.png')
+  const btn = document.getElementById(`btnDesplegar${indiceBase}`);
+  if (btn) {
+    const img = btn.querySelector("img");
+    if (img) {
+      if (estaActualmenteExpandido) {
+        // Se acaba de colapsar
+        img.src = "desplegar.png";
+        img.alt = "Mostrar más";
+      } else {
+        // Se acaba de expandir
+        // img.src = "colapsar.png"; // Suponiendo que tienes esta imagen
+        // img.alt = "Mostrar menos";
+        // Si no tienes imagen de colapsar, puedes dejarla igual o rotarla con CSS
+      }
+    }
+  }
 }
 
-/**
- * Limpia el listado y resetea el estado de visibilidad.
- */
 function limpiarListado() {
-  mostrable = [2, 3, 4, 5, 6, 7, 8, 9]; // Resetear al estado inicial
+  mostrable = [2, 3, 4, 5, 6, 7, 8, 9];
   if (ulListado) {
     ulListado.innerHTML =
-      '<img id="imgPlazos" src="plazos-tribunal.jpg" alt="Plazos Tribunal"><br></br>'; // Asegúrate que esta imagen exista
+      '<img id="imgPlazos" src="plazos-tribunal.jpg" alt="Plazos Tribunal"><br></br>';
   }
   if (btnLimpiar) btnLimpiar.disabled = true;
-  // También podrías limpiar el input de fecha si lo deseas:
-  // const startDateInputEl = document.getElementById("startDate");
-  // if (startDateInputEl) startDateInputEl.value = "";
+
+  // Considera si necesitas llamar a agregarElementos() aquí.
+  // Si yearArr está vacío después de limpiar, o si la imagen es el único estado deseado, no es necesario.
+  // Si yearArr aún contiene datos y quieres que los ítems 2-9 se muestren según 'mostrable',
+  // entonces SÍ deberías llamar a agregarElementos(yearArr);
+  // Por ahora, se asume que la imagen es el estado deseado y 'nextYear' reconstruirá.
 }
 
-// Para que desplegarItems sea accesible globalmente si se usa en `onclick` en HTML generado dinámicamente
 window.desplegarItems = desplegarItems;
