@@ -1,43 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <link href="styles.css" rel="stylesheet" type="text/css">
-    <title>Contador de Plazos</title>
-    
-</head>
 <body>
     <div id="app">
         <h1>Contador de Plazos</h1>
-        <label for="startDate">Inicio:</label>
-    <!-- llamo al módulo moment.js -->    
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-        
-        <!-- defino el input con la fecha de hoy por defecto -->    
-        <input id="startDate" type="date">
-        <script>
-        document.getElementById('startDate').value = moment().format('YYYY-MM-DD');
-        </script>
+        <div class="app-controls-group">
+            <label for="startDate">Inicio:</label>
+            <input id="startDate" type="date"> 
+            <button id="btnCalcular">Calcular</button>
+            <button id="btnLimpiar" disabled>Limpiar</button>
+        </div>
+    </div> <div id="ulListado"> <img id="imgPlazos" src="plazos-tribunal.jpg" alt="Plazos Tribunal">
+        </div>
 
-        
-        <button id="btnCalcular">Calcular</button>
-        <button id="btnLimpiar" disabled onclick = "limpiarListado()">Limpiar</button>
-    </div>
-    
-    
-    <div id="ulListado">
-        <img id="imgPlazos" src="plazos-tribunal.jpg" alt="Plazos Tribunal">
-        <!-- Se llena dinámicamente con JS-->
-            <br>
-            
-    </div>
-    
-
-
-<script src="./main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        // Este script ahora se ejecuta después de que input#startDate esté definido
+        const startDateInput = document.getElementById('startDate');
+        if (startDateInput) { // Buena práctica verificar que existe
+            startDateInput.value = moment().format('YYYY-MM-DD');
+        }
+    </script>
+    <script src="./main.js"></script>
 
 </body>
 </html>

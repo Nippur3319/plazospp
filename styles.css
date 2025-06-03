@@ -1,89 +1,256 @@
+/* styles.css - Versión Mejorada y Responsiva */
+
+/* --- Reset Básico y Estilos Globales --- */
 * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* Hace que el padding y border no incrementen el tamaño total del elemento */
+}
+
+html {
+  font-size: 16px; /* Base para unidades 'rem', bueno para accesibilidad y escalabilidad */
+}
+
+body {
   font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
-  margin:0;
+  line-height: 1.6; /* Mejora la legibilidad del texto */
+  color: #333; /* Color de texto principal */
+  background-color: #f8f9fa; /* Un fondo de página muy sutil */
+  /* MUY IMPORTANTE: Ajusta este valor de padding-top.
+     Debe ser un poco MÁS que la altura máxima que ocupa tu #app (el encabezado fijo)
+     en pantallas pequeñas cuando sus elementos internos se apilan.
+     Podrías necesitar un valor diferente o ajustarlo con media queries si la altura de #app varía mucho.
+     Un valor inicial podría ser entre 180px y 250px, dependiendo de tu contenido en #app. */
+  padding-top: 230px; 
 }
 
-h1{
-  margin: 20px 0px;
-}
-
+/* --- Encabezado Fijo (#app) --- */
 #app {
-  font-size: large;
-  z-index: 100;
+  font-size: 1rem; /* Usa rem para consistencia */
+  z-index: 1000; /* Asegura que esté por encima de otro contenido */
   position: fixed;
   top: 0;
   left: 0;
-  /*padding: 10px 0 10px 0;*/
-  padding-bottom: 10px;
-  margin-bottom: 10px;
-  background-color: #8dcaff;
   width: 100%;
-  height: 111px;
+  height: auto; /* Altura se ajusta al contenido, no fija */
+  background-color: #8dcaff;
+  padding: 15px; /* Espaciado interno */
   text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+}
+
+#app h1 {
+  font-size: 1.6rem; /* Tamaño para el título principal */
+  margin: 0 0 15px 0; /* Margen inferior */
+  color: #2c3e50; /* Un color más oscuro para el título */
+}
+
+#app label {
+  display: block; /* Ocupa su propia línea */
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #34495e; /* Color para el label */
+}
+
+#app input[type="date"],
+#app button {
+  width: 100%;
+  max-width: 300px; /* Ancho máximo para que no sean demasiado grandes en el header */
+  padding: 12px;
+  font-size: 1rem;
+  border-radius: 6px; /* Bordes un poco más redondeados */
+  border: 1px solid #bdc3c7; /* Borde sutil */
+  margin: 0 auto 12px auto; /* Centrados y con margen inferior */
+  display: block; /* Para que width y margin:auto funcionen */
+  box-sizing: border-box; /* Ya está en el reset, pero es bueno recordarlo */
+}
+
+#app input[type="date"] {
+  background-color: #fff;
+}
+
+#app button {
+  background-color: #3498db; /* Azul más vibrante */
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s ease; /* Transición para hover */
+}
+
+#app button:hover {
+  background-color: #2980b9; /* Azul más oscuro al pasar el mouse */
+}
+
+#app button#btnLimpiar {
+  background-color: #7f8c8d; /* Gris para botón secundario */
+}
+
+#app button#btnLimpiar:hover {
+  background-color: #606f70;
+}
+
+#app button:disabled {
+  background-color: #dce4e8; /* Más claro cuando está deshabilitado */
+  color: #95a5a6;
+  cursor: not-allowed;
+}
+
+/* --- Contenedor de Resultados (#ulListado) --- */
+#ulListado {
+  /* El padding-top del body ya empuja este contenido hacia abajo */
+  padding: 20px 15px; /* Espacio alrededor de la lista */
+  width: 100%;
+  max-width: 800px; /* Ancho máximo para la lista en pantallas grandes */
+  margin: 0 auto; /* Centrar la lista si tiene max-width */
+  text-align: left; /* Mejor para listas de texto */
 }
 
 #imgPlazos {
   width: 100%;
-
+  max-width: 350px; /* Limita el tamaño de la imagen de placeholder */
+  height: auto;
+  display: block;
+  margin: 0 auto 25px auto; /* Centrar y dar espacio inferior */
+  border-radius: 8px; /* Bordes redondeados para la imagen */
 }
 
-#ulListado {
-  color: #00AB66;
-  position: relative;
-  top: 120px;
-  margin: 0px;
-  padding: 0px;
-  width: 100%;
-  text-align: center;
-  
-  
-}
-
+/* --- Ítems de la Lista (li) --- */
 #ulListado li {
   list-style: none;
-  margin: 0px;
-  padding: 10px 0 10px 0;
-  border-top: 1px solid #000;
-  background-color: #d0e9fe;
+  margin-bottom: 12px;
+  padding: 12px 15px;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
-
-.boldLi {
-  font-weight: bold;
-  
-  background-color: aliceblue;
+#ulListado li p {
+  margin: 0 0 6px 0;
+  line-height: 1.5;
 }
 
-.regularLi {
-  font-size: 10vw;
-  font-weight: normal;
+#ulListado li p:last-child {
+  margin-bottom: 0;
 }
 
+/* Clases específicas para los ítems de la lista */
+#ulListado li.smallLi { /* Para los días normales entre desplegables */
+  font-size: 0.9rem;
+  background-color: #fdfdfd; /* Fondo muy sutilmente diferente */
+  /* border-top: 1px dashed #eee; */ /* Si quieres una separación visual diferente */
+}
+
+#ulListado li.holidayLi {
+  background-color: #fff8e1; /* Amarillo pálido para feriados */
+  border-left: 5px solid #ffc107; /* Acento de color amarillo más fuerte */
+  color: #594500; /* Texto oscuro para buen contraste */
+}
+
+#ulListado li.weekendLi {
+  /* Puedes definir un estilo sutil para los fines de semana que no son feriados */
+  /* background-color: #f5f5f5; */
+  /* color: #555; */
+}
+
+/* Si un feriado cae en fin de semana, los estilos de .holidayLi suelen ser más específicos y prevalecen.
+   Si necesitas una combinación, puedes definirla: */
+#ulListado li.holidayLi.weekendLi {
+  /* Por ejemplo, mantener el fondo de holidayLi pero con un borde diferente o un detalle */
+}
+
+#ulListado li a {
+  color: #0056b3; /* Color estándar para enlaces */
+  text-decoration: underline;
+}
+
+#ulListado li a:hover {
+  color: #003d80;
+}
+
+/* --- Botón Desplegar dentro de los ítems --- */
+.btnDesplegar {
+  background-color: transparent;
+  border: 1px solid #3498db; /* Borde que coincida con el color primario */
+  color: #3498db;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: block; /* Para que ocupe su propia línea o para márgenes */
+  margin-top: 10px;
+  /* margin-left: auto; */ /* Para alinear a la derecha si es display: block */
+  font-size: 0.9rem;
+}
+
+.btnDesplegar:hover {
+  background-color: #eaf4fb;
+}
+
+.icono-desplegable { /* Clase para la imagen del ícono (aplicada en JS) */
+  transition: transform 0.25s ease-in-out; /* Animación suave */
+  transform-origin: center; /* Rota desde el centro del ícono */
+  vertical-align: middle; /* Para alinear mejor con texto si lo hubiera */
+}
+
+.icono-desplegable.icono-rotado { /* Clase cuando la sección está expandida (aplicada en JS) */
+  transform: rotate(180deg);
+}
+
+/* --- Clases de Utilidad --- */
 .invisible {
-  display: none;
+  display: none !important; /* Usar !important con precaución */
 }
 
-#startDate {
-  width: 140px;
+.error-message { /* Para mensajes de error en la UI */
+    color: #c0392b; /* Rojo oscuro */
+    background-color: #fdd; /* Fondo rosa claro */
+    padding: 10px;
+    border: 1px solid #c0392b;
+    border-radius: 4px;
+    text-align: center;
 }
 
 
-#ulListado li.smallLi{
-  font-size: smaller;
-  border-top: 0.7px dotted #000;
-  background-color: aliceblue;
+/* --- Media Queries para Ajustes en Pantallas Más Grandes --- */
+@media (min-width: 600px) {
+  body {
+    /* Podrías reducir el padding-top si el header #app ocupa menos altura en pantallas grandes */
+    /* padding-top: 150px; */ /* Ejemplo, ajustar según sea necesario */
+  }
 
-}
+  #app {
+    /* Podrías querer que el contenido de #app no esté centrado o se distribuya diferente */
+    /* text-align: left; */
+    /* padding: 15px 30px; */ /* Más padding horizontal */
+  }
 
-.btnDesplegar{
-  text-decoration: none;
-  border: none;
-  color: #fff;
-  background-color: #d0e9fe;
-}
+  /* Contenedor para agrupar label, input y botones y ponerlos en línea */
+  .app-controls-group {
+    display: flex;
+    flex-wrap: wrap; /* Permitir que los elementos pasen a la siguiente línea si no caben */
+    align-items: center; /* Alinear verticalmente los ítems */
+    justify-content: center; /* Centrar el grupo de controles */
+    gap: 15px; /* Espacio entre los controles */
+  }
+  
+  /* Para usar .app-controls-group, necesitarías envolver el label, input y botones en el HTML:
+  <div id="app">
+      <h1>Contador de Plazos</h1>
+      <div class="app-controls-group">
+          <label for="startDate">Inicio:</label>
+          <input id="startDate" type="date">
+          <button id="btnCalcular">Calcular</button>
+          <button id="btnLimpiar" disabled>Limpiar</button>
+      </div>
+  </div>
+  */
 
-.holidayLi,
-.weekendLi {
-  color: red;
-  /*background-color: rgb(247, 203, 211);*/
+  #app input[type="date"],
+  #app button {
+    width: auto; /* Dejan de ocupar el 100% */
+    /* max-width: none; */ /* Quitar max-width si quieres que se ajusten a su contenido */
+    min-width: 130px; /* Un ancho mínimo para que no sean demasiado pequeños */
+    margin-bottom: 0; /* Quitar margen inferior si están en línea */
+  }
 }
