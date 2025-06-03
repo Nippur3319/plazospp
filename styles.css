@@ -230,16 +230,9 @@ body {
 
 /* --- Media Queries para Ajustes en Pantallas Más Grandes --- */
 @media (min-width: 600px) {
-  body {
-    /* Podrías reducir el padding-top si el header #app ocupa menos altura en pantallas grandes */
-    /* padding-top: 150px; */ /* Ejemplo, ajustar según sea necesario */
-  }
+ 
 
-  #app {
-    /* Podrías querer que el contenido de #app no esté centrado o se distribuya diferente */
-    /* text-align: left; */
-    /* padding: 15px 30px; */ /* Más padding horizontal */
-  }
+ 
 
   /* Contenedor para agrupar label, input y botones y ponerlos en línea */
   .app-controls-group {
@@ -269,4 +262,4 @@ body {
     min-width: 130px; /* Un ancho mínimo para que no sean demasiado pequeños */
     margin-bottom: 0; /* Quitar margen inferior si están en línea */
   }
-}
+}}
