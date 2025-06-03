@@ -149,16 +149,18 @@ body {
 }
 
 #ulListado li.weekendLi {
-  /* Puedes definir un estilo sutil para los fines de semana que no son feriados */
-  /* background-color: #f5f5f5; */
-  /* color: #555; */
+  background-color: #f0f2f5; /* Gris muy claro y sutil para fines de semana */
+  /* color: #495057; */ /* Opcional: color de texto si lo deseas */
 }
 
-/* Si un feriado cae en fin de semana, los estilos de .holidayLi suelen ser más específicos y prevalecen.
-   Si necesitas una combinación, puedes definirla: */
+/* Para fines de semana que también son feriados, el estilo de .holidayLi
+   probablemente ya le dará el fondo amarillo. Si quieres ser ultra específico: */
 #ulListado li.holidayLi.weekendLi {
-  /* Por ejemplo, mantener el fondo de holidayLi pero con un borde diferente o un detalle */
+   background-color: #fff8e1; /* Asegura que siga siendo amarillo feriado */
+   /* O un color completamente nuevo si así lo deseas para esta combinación */
+   /* border-left-color: #e65100; */ /* Ejemplo: un acento de borde diferente */
 }
+
 
 #ulListado li a {
   color: #0056b3; /* Color estándar para enlaces */
