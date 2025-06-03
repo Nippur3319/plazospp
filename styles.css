@@ -216,6 +216,8 @@ body {
   display: none !important; /* Usar !important con precaución */
 }
 
+
+
 .error-message { /* Para mensajes de error en la UI */
     color: #c0392b; /* Rojo oscuro */
     background-color: #fdd; /* Fondo rosa claro */
