@@ -1,4 +1,4 @@
-/* styles.css - Versión Mejorada y Responsiva */
+/* styles.css - Versión Corregida y Responsiva */
 
 /* --- Reset Básico y Estilos Globales --- */
 * {
@@ -120,8 +120,7 @@ body {
   list-style: none;
   margin-bottom: 12px;
   padding: 12px 15px;
-  /* background-color: #ffffff; */ /* CAMBIAR ESTO */
-  background-color: #e8f5e9; /* NUEVO: Verde muy pálido para días hábiles */
+  background-color: #e8f5e9; /* Verde muy pálido para días hábiles */
   border: 1px solid #d0e0d0; /* Ajustar el borde para que combine con el nuevo fondo */
   border-radius: 6px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
@@ -140,10 +139,7 @@ body {
 /* Clases específicas para los ítems de la lista */
 #ulListado li.smallLi { /* Para los días normales entre desplegables, también son hábiles */
   font-size: 0.9rem;
-  /* background-color: #fdfdfd; */ /* CAMBIAR ESTO para que coincida con el de días hábiles */
   background-color: #e8f5e9; /* Mismo verde muy pálido */
-  /* Podrías mantener un borde ligeramente diferente si quieres distinción sutil */
-  /* border-top: 1px dashed #c8e6c9; */
   color: #2e7d32; /* Asegurar contraste */
 }
 
@@ -162,17 +158,11 @@ body {
 }
 
 /* Fines de semana que también son Feriados */
-/* El estilo de .holidayLi es visualmente más fuerte y probablemente el que quieras que se vea.
-   Si quieres un estilo único para "feriado en fin de semana", puedes definirlo aquí.
-   Por ejemplo, podrías mantener el fondo de feriado pero cambiar el color del texto o el borde. */
 #ulListado li.holidayLi.weekendLi {
    background-color: #fff8e1; /* Sigue siendo amarillo feriado */
    border-left-color: #e65100; /* Ejemplo: un acento de borde naranja para destacarlo aún más */
    color: #594500; /* Asegurar que el color de texto de holidayLi prevalezca */
-
-
-
-
+} /* <<<--- LLAVE DE CIERRE AÑADIDA AQUÍ ---<<< */
 
 #ulListado li a {
   color: #0056b3; /* Color estándar para enlaces */
@@ -193,7 +183,6 @@ body {
   cursor: pointer;
   display: block; /* Para que ocupe su propia línea o para márgenes */
   margin-top: 10px;
-  /* margin-left: auto; */ /* Para alinear a la derecha si es display: block */
   font-size: 0.9rem;
 }
 
@@ -216,8 +205,6 @@ body {
   display: none !important; /* Usar !important con precaución */
 }
 
-
-
 .error-message { /* Para mensajes de error en la UI */
     color: #c0392b; /* Rojo oscuro */
     background-color: #fdd; /* Fondo rosa claro */
@@ -227,12 +214,18 @@ body {
     text-align: center;
 }
 
-
 /* --- Media Queries para Ajustes en Pantallas Más Grandes --- */
 @media (min-width: 600px) {
- 
+  /* body { */
+    /* Podrías reducir el padding-top si el header #app ocupa menos altura en pantallas grandes */
+    /* padding-top: 150px; */ /* Ejemplo, ajustar según sea necesario */
+  /* } */
 
- 
+  /* #app { */
+    /* Podrías querer que el contenido de #app no esté centrado o se distribuya diferente */
+    /* text-align: left; */
+    /* padding: 15px 30px; */ /* Más padding horizontal */
+  /* } */
 
   /* Contenedor para agrupar label, input y botones y ponerlos en línea */
   .app-controls-group {
@@ -258,8 +251,7 @@ body {
   #app input[type="date"],
   #app button {
     width: auto; /* Dejan de ocupar el 100% */
-    /* max-width: none; */ /* Quitar max-width si quieres que se ajusten a su contenido */
     min-width: 130px; /* Un ancho mínimo para que no sean demasiado pequeños */
     margin-bottom: 0; /* Quitar margen inferior si están en línea */
   }
-}}
+} /* <<<--- LLAVE EXTRA AL FINAL DEL ARCHIVO ELIMINADA ---<<< */
