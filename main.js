@@ -1,10 +1,25 @@
+// En tu archivo main.js
+
 let today = new Date();
 let anio = today.getFullYear();
 let nextAnio = anio + 1;
 let nextNextAnio = anio + 2;
-let url = `https://nolaborables.com.ar/api/v2/feriados/${anio}?incluir=opcional`;
-let urlNextYear = `https://nolaborables.com.ar/api/v2/feriados/${nextAnio}?incluir=opcional`;
-let urlNextNextYear = `https://nolaborables.com.ar/api/v2/feriados/${nextNextAnio}?incluir=opcional`;
+
+// --- ANTES ---
+// let url = `https://nolaborables.com.ar/api/v2/feriados/${anio}?incluir=opcional`;
+// let urlNextYear = `https://nolaborables.com.ar/api/v2/feriados/${nextAnio}?incluir=opcional`;
+// let urlNextNextYear = `https://nolaborables.com.ar/api/v2/feriados/${nextNextAnio}?incluir=opcional`;
+
+// --- AHORA (apuntando a tu proxy en Vercel) ---
+// Estas URLs son relativas a la raíz de tu sitio en Vercel, ya que la función /api/feriados
+// estará en el mismo dominio que tu index.html y main.js
+let url = `/api/feriados?anio=${anio}&incluir=opcional`;
+let urlNextYear = `/api/feriados?anio=${nextAnio}&incluir=opcional`;
+let urlNextNextYear = `/api/feriados?anio=${nextNextAnio}&incluir=opcional`;
+
+// El resto de tu código en main.js (funciones getHolidays, etc.) sigue igual,
+// ya que solo consumen estas variables de URL.
+
 let HTMLResponse = document.getElementById("app");
 let yearArr = [];
 let weekDayName;
@@ -12,7 +27,6 @@ let weekDayName;
 let mostrable = [2, 3, 4, 5, 6, 7, 8, 9];
 
 let btnLimpiar = document.getElementById("btnLimpiar");
-
 
 document.getElementById("btnCalcular").onclick = function () {
   nextYear();
@@ -176,16 +190,14 @@ function agregarElementos(arr) {
         //linew.classList.add("boldLi");
         //creo un botón para desplegar los siguientes 10 elementos
         let indexBtn = arr.indexOf(data);
-        
+
         let btnDesplegar = document.createElement("button");
         btnDesplegar.setAttribute("onclick", `desplegarItems(${indexBtn})`);
         btnDesplegar.setAttribute("id", `btnDesplegar${indexBtn}`);
         btnDesplegar.setAttribute("class", "btnDesplegar");
-        
-        
+
         btnDesplegar.innerHTML = `<img id="imgDesplegar" src="desplegar.png" alt="desplegar" width="10">`;
         linew.appendChild(btnDesplegar);
-
       } else if (mostrable.indexOf(arr.indexOf(data)) === -1) {
         // si no es múltiplo de 10 y no está en el array mostrable
         linew.className = "regularLi, invisible";
@@ -204,8 +216,6 @@ function agregarElementos(arr) {
 
 // despliegue de ítems adyacentes al múltiplo de 10
 function desplegarItems(indice) {
-
-
   //completo el array mostrable el indice de los días que tengo que togglear
   for (let i = indice; i < indice + 10; i++) {
     //console.log(yearArr[i]);
@@ -213,7 +223,6 @@ function desplegarItems(indice) {
   }
 
   agregarElementos(yearArr);
- 
 }
 
 function limpiarListado() {
