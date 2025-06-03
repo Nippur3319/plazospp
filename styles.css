@@ -21,7 +21,7 @@ body {
      en pantallas pequeñas cuando sus elementos internos se apilan.
      Podrías necesitar un valor diferente o ajustarlo con media queries si la altura de #app varía mucho.
      Un valor inicial podría ser entre 180px y 250px, dependiendo de tu contenido en #app. */
-  padding-top: 230px; 
+  padding-top: 260px; 
 }
 
 /* --- Encabezado Fijo (#app) --- */
@@ -120,10 +120,12 @@ body {
   list-style: none;
   margin-bottom: 12px;
   padding: 12px 15px;
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
+  /* background-color: #ffffff; */ /* CAMBIAR ESTO */
+  background-color: #e8f5e9; /* NUEVO: Verde muy pálido para días hábiles */
+  border: 1px solid #d0e0d0; /* Ajustar el borde para que combine con el nuevo fondo */
   border-radius: 6px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  color: #2e7d32; /* Un color de texto verde oscuro para buen contraste con el fondo verde claro */
 }
 
 #ulListado li p {
@@ -136,30 +138,40 @@ body {
 }
 
 /* Clases específicas para los ítems de la lista */
-#ulListado li.smallLi { /* Para los días normales entre desplegables */
+#ulListado li.smallLi { /* Para los días normales entre desplegables, también son hábiles */
   font-size: 0.9rem;
-  background-color: #fdfdfd; /* Fondo muy sutilmente diferente */
-  /* border-top: 1px dashed #eee; */ /* Si quieres una separación visual diferente */
+  /* background-color: #fdfdfd; */ /* CAMBIAR ESTO para que coincida con el de días hábiles */
+  background-color: #e8f5e9; /* Mismo verde muy pálido */
+  /* Podrías mantener un borde ligeramente diferente si quieres distinción sutil */
+  /* border-top: 1px dashed #c8e6c9; */
+  color: #2e7d32; /* Asegurar contraste */
 }
 
+/* Feriados (estos estilos sobreescribirán el fondo de día hábil) */
 #ulListado li.holidayLi {
   background-color: #fff8e1; /* Amarillo pálido para feriados */
   border-left: 5px solid #ffc107; /* Acento de color amarillo más fuerte */
   color: #594500; /* Texto oscuro para buen contraste */
 }
 
+/* Fines de Semana (estos estilos sobreescribirán el fondo de día hábil) */
 #ulListado li.weekendLi {
   background-color: #f0f2f5; /* Gris muy claro y sutil para fines de semana */
-  /* color: #495057; */ /* Opcional: color de texto si lo deseas */
+  color: #495057; /* Un color de texto neutro para fines de semana */
+  border-color: #d1d9e0; /* Ajustar color de borde si es diferente */
 }
 
-/* Para fines de semana que también son feriados, el estilo de .holidayLi
-   probablemente ya le dará el fondo amarillo. Si quieres ser ultra específico: */
+/* Fines de semana que también son Feriados */
+/* El estilo de .holidayLi es visualmente más fuerte y probablemente el que quieras que se vea.
+   Si quieres un estilo único para "feriado en fin de semana", puedes definirlo aquí.
+   Por ejemplo, podrías mantener el fondo de feriado pero cambiar el color del texto o el borde. */
 #ulListado li.holidayLi.weekendLi {
-   background-color: #fff8e1; /* Asegura que siga siendo amarillo feriado */
-   /* O un color completamente nuevo si así lo deseas para esta combinación */
-   /* border-left-color: #e65100; */ /* Ejemplo: un acento de borde diferente */
-}
+   background-color: #fff8e1; /* Sigue siendo amarillo feriado */
+   border-left-color: #e65100; /* Ejemplo: un acento de borde naranja para destacarlo aún más */
+   color: #594500; /* Asegurar que el color de texto de holidayLi prevalezca */
+
+
+
 
 
 #ulListado li a {
