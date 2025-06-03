@@ -1,233 +1,298 @@
-// En tu archivo main.js
+// main.js - Versión Refactorizada
 
-let today = new Date();
-let anio = today.getFullYear();
-let nextAnio = anio + 1;
-let nextNextAnio = anio + 2;
+// --- Variables Globales ---
+const today = new Date();
+const anio = today.getFullYear();
+const nextAnio = anio + 1;
+const nextNextAnio = anio + 2;
 
-// --- ANTES ---
-// let url = `https://nolaborables.com.ar/api/v2/feriados/${anio}?incluir=opcional`;
-// let urlNextYear = `https://nolaborables.com.ar/api/v2/feriados/${nextAnio}?incluir=opcional`;
-// let urlNextNextYear = `https://nolaborables.com.ar/api/v2/feriados/${nextNextAnio}?incluir=opcional`;
+// URLs apuntando al proxy en Vercel (o Netlify)
+const url = `/api/feriados?anio=${anio}&incluir=opcional`;
+const urlNextYear = `/api/feriados?anio=${nextAnio}&incluir=opcional`;
+const urlNextNextYear = `/api/feriados?anio=${nextNextAnio}&incluir=opcional`;
 
-// --- AHORA (apuntando a tu proxy en Vercel) ---
-// Estas URLs son relativas a la raíz de tu sitio en Vercel, ya que la función /api/feriados
-// estará en el mismo dominio que tu index.html y main.js
-let url = `/api/feriados?anio=${anio}&incluir=opcional`;
-let urlNextYear = `/api/feriados?anio=${nextAnio}&incluir=opcional`;
-let urlNextNextYear = `/api/feriados?anio=${nextNextAnio}&incluir=opcional`;
+const HTMLResponse = document.getElementById("app"); // Considera si realmente usas esta variable
+let yearArr = []; // Array principal que contendrá los objetos de fecha e información de feriados
+let mostrable = [2, 3, 4, 5, 6, 7, 8, 9]; // Días inicialmente visibles (lógica de UI)
 
-// El resto de tu código en main.js (funciones getHolidays, etc.) sigue igual,
-// ya que solo consumen estas variables de URL.
+const btnLimpiar = document.getElementById("btnLimpiar");
+const btnCalcular = document.getElementById("btnCalcular");
+const ulListado = document.getElementById("ulListado"); // Obtener una vez para reutilizar
 
-let HTMLResponse = document.getElementById("app");
-let yearArr = [];
-let weekDayName;
+// --- Event Listeners ---
+if (btnCalcular) {
+  btnCalcular.onclick = function () {
+    nextYear();
+  };
+}
 
-let mostrable = [2, 3, 4, 5, 6, 7, 8, 9];
+if (btnLimpiar) {
+  btnLimpiar.onclick = function () {
+    limpiarListado();
+  };
+}
 
-let btnLimpiar = document.getElementById("btnLimpiar");
+// --- Lógica Principal ---
 
-document.getElementById("btnCalcular").onclick = function () {
-  nextYear();
-};
+/**
+ * Prepara el array de días y luego obtiene y procesa los feriados.
+ */
+async function nextYear() {
+  yearArr = []; // Reiniciar el array global de días
+  const startDateInput = document.getElementById("startDate").value;
 
-function nextYear() {
-  //creo un array con los próximos 730 días (2 años) desde la fecha de inicio de conteo
-  yearArr = [];
-  let startDate = new Date(document.getElementById("startDate").value);
-  for (let i = 0; i <= 730; i++) {
-    let newDate = {
-      isDate: new Date(startDate.setDate(startDate.getDate() + 1)),
+  if (!startDateInput) {
+    console.warn("Fecha de inicio no seleccionada.");
+    ulListado.innerHTML =
+      '<p class="error-message">Por favor, selecciona una fecha de inicio.</p>';
+    return;
+  }
+
+  const initialStartDate = new Date(startDateInput); // Fecha base para los cálculos
+
+  // Crear el array base de días (731 días para cubrir 2 años completos desde el día siguiente)
+  for (let i = 0; i < 731; i++) {
+    // Loop 731 veces para incluir el día final
+    const currentDate = new Date(initialStartDate);
+    currentDate.setDate(initialStartDate.getDate() + i + 1); // Sumar i+1 días a la fecha de inicio
+
+    yearArr.push({
+      isDate: currentDate,
       dia: 0,
       id: "",
       info: "",
       mes: 0,
       motivo: "",
       tipo: "",
-    };
-
-    yearArr.push(newDate);
+      year: 0, // Inicializar propiedades
+    });
   }
-  getHolidays().then(getNextYearHolidays()).then(getNextNextYearHolidays());
-}
 
-function getDayName(value) {
-  switch (value) {
-    case 0:
-      weekDayName = "Domingo";
-      break;
-    case 1:
-      weekDayName = "Lunes";
-      break;
-    case 2:
-      weekDayName = "Martes";
-      break;
-    case 3:
-      weekDayName = "Miércoles";
-      break;
-    case 4:
-      weekDayName = "Jueves";
-      break;
-    case 5:
-      weekDayName = "Viernes";
-      break;
-    case 6:
-      weekDayName = "Sábado";
-      break;
+  // Mostrar mensaje de carga y deshabilitar botón de limpiar
+  ulListado.innerHTML = "<p>Cargando feriados, por favor espera...</p>";
+  btnLimpiar.disabled = true;
+
+  try {
+    // Ejecutar todas las solicitudes de feriados en paralelo
+    const results = await Promise.all([
+      getHolidaysData(url, anio),
+      getHolidaysData(urlNextYear, nextAnio),
+      getHolidaysData(urlNextNextYear, nextNextAnio),
+    ]);
+
+    // Actualizar la información en yearArr con todos los feriados obtenidos.
+    // results[0] son los feriados del año actual, results[1] del siguiente, etc.
+    if (results[0]) updateHolidayInfoInYearArr(yearArr, results[0]);
+    if (results[1]) updateHolidayInfoInYearArr(yearArr, results[1]);
+    if (results[2]) updateHolidayInfoInYearArr(yearArr, results[2]);
+
+    // Dibujar la lista UNA SOLA VEZ con toda la información
+    agregarElementos(yearArr);
+    if (btnLimpiar) btnLimpiar.removeAttribute("disabled"); // Habilitar después de cargar
+  } catch (error) {
+    console.error("Fallo una o más solicitudes de feriados:", error);
+    ulListado.innerHTML = `<p class="error-message">Error al cargar la información de feriados: ${error.message}. Por favor, intente más tarde.</p>`;
   }
 }
 
-async function getHolidays() {
-  // api trae los feriados por año, no por fecha, es decir, no verifica fecha por fecha si el día es feriado o no, sino que trae un array con todos los feriados del año solicitado
-  fetch(url)
-    .then((response) => response.json())
-    .then((holidaysArr) => {
-      addHolidayYear(holidaysArr, anio);
-      //le agrega el anio del url al array de feriados
-
-      updateNextYearInfo(yearArr, holidaysArr);
-    });
-}
-
-async function getNextYearHolidays() {
-  fetch(urlNextYear)
-    .then((response) => response.json())
-    .then((nextYearHolidaysArr) => {
-      addHolidayYear(nextYearHolidaysArr, nextAnio);
-      //le agrega el anio del url al array de feriados
-
-      updateNextYearInfo(yearArr, nextYearHolidaysArr);
-    });
-}
-
-async function getNextNextYearHolidays() {
-  fetch(urlNextNextYear)
-    .then((response) => response.json())
-    .then((nextNextYearHolidaysArr) => {
-      addHolidayYear(nextNextYearHolidaysArr, nextNextAnio);
-      //le agrega el anio del url al array de feriados
-
-      updateNextYearInfo(yearArr, nextNextYearHolidaysArr);
-    });
-}
-
-function addHolidayYear(array, year) {
-  for (let i = 0; i < array.length; i++) {
-    array[i].year = year;
+/**
+ * Función genérica para obtener datos de feriados desde una URL.
+ * @param {string} fetchUrl La URL del proxy para obtener los feriados.
+ * @param {number} yearForHolidayData El año para el cual se solicitan los feriados.
+ * @returns {Promise<Array<Object>>} Una promesa que resuelve con el array de feriados procesado.
+ */
+async function getHolidaysData(fetchUrl, yearForHolidayData) {
+  try {
+    const response = await fetch(fetchUrl);
+    if (!response.ok) {
+      const errorData = await response
+        .json()
+        .catch(() => ({ error: "Respuesta no JSON del servidor" }));
+      throw new Error(
+        `Error ${
+          response.status
+        } de la API para el año ${yearForHolidayData}: ${
+          errorData.error || response.statusText
+        }`
+      );
+    }
+    const holidaysArr = await response.json();
+    addHolidayYearProperty(holidaysArr, yearForHolidayData); // Añade la propiedad 'year' a cada feriado
+    return holidaysArr;
+  } catch (error) {
+    console.error(
+      `Error obteniendo feriados para ${yearForHolidayData} desde ${fetchUrl}:`,
+      error
+    );
+    throw error; // Re-lanzar para que Promise.all lo capture y maneje centralizadamente.
   }
-  //console.log(JSON.stringify(array))
 }
 
-function updateNextYearInfo(year, holidays) {
-  for (let i = 0; i < year.length; i++) {
-    for (let z = 0; z < holidays.length; z++) {
+/**
+ * Añade la propiedad 'year' a cada objeto en un array de feriados.
+ * @param {Array<Object>} holidaysArray Array de objetos de feriados.
+ * @param {number} year El año a asignar.
+ */
+function addHolidayYearProperty(holidaysArray, year) {
+  for (let i = 0; i < holidaysArray.length; i++) {
+    holidaysArray[i].year = year;
+  }
+}
+
+/**
+ * Actualiza el array principal `yearArr` con la información de los feriados.
+ * @param {Array<Object>} targetYearArr El array de días a actualizar (normalmente el global `yearArr`).
+ * @param {Array<Object>} holidaysFromApi Array de feriados obtenidos de la API para un año específico.
+ */
+function updateHolidayInfoInYearArr(targetYearArr, holidaysFromApi) {
+  if (!holidaysFromApi) {
+    console.warn(
+      "Conjunto de feriados vacío o con error, omitiendo actualización para este conjunto."
+    );
+    return;
+  }
+  for (let i = 0; i < targetYearArr.length; i++) {
+    const dayObject = targetYearArr[i];
+    for (let z = 0; z < holidaysFromApi.length; z++) {
+      const holiday = holidaysFromApi[z];
       if (
-        year[i].isDate.getMonth() + 1 == holidays[z].mes &&
-        year[i].isDate.getDate() == holidays[z].dia &&
-        year[i].isDate.getFullYear() == holidays[z].year
+        dayObject.isDate.getMonth() + 1 === holiday.mes &&
+        dayObject.isDate.getDate() === holiday.dia &&
+        dayObject.isDate.getFullYear() === holiday.year // holiday.year fue añadido por addHolidayYearProperty
       ) {
-        year[i].dia = holidays[z].dia;
-        year[i].id = holidays[z].id;
-        year[i].info = holidays[z].info;
-        year[i].mes = holidays[z].mes;
-        year[i].motivo = holidays[z].motivo;
-        year[i].tipo = holidays[z].tipo;
-        year[i].year = holidays[z].year;
+        dayObject.dia = holiday.dia;
+        dayObject.id = holiday.id;
+        dayObject.info = holiday.info;
+        dayObject.mes = holiday.mes;
+        dayObject.motivo = holiday.motivo;
+        dayObject.tipo = holiday.tipo;
+        dayObject.year = holiday.year; // Asignar también el año del feriado al objeto día
       }
     }
   }
-  yearArr = year;
-  //console.log(JSON.stringify(yearArr));
-  agregarElementos(yearArr);
 }
 
+/**
+ * Obtiene el nombre del día de la semana.
+ * @param {number} dayIndex El índice del día (0 para Domingo, 1 para Lunes, etc.).
+ * @returns {string} El nombre del día.
+ */
+function getDayName(dayIndex) {
+  const dayNames = [
+    "Domingo",
+    "Lunes",
+    "Martes",
+    "Miércoles",
+    "Jueves",
+    "Viernes",
+    "Sábado",
+  ];
+  return dayNames[dayIndex] || "Día Desconocido";
+}
+
+/**
+ * Renderiza los elementos de la lista en el DOM.
+ * @param {Array<Object>} arr El array de días (`yearArr`) a mostrar.
+ */
 function agregarElementos(arr) {
-  //muestro el botón limpiar
-  btnLimpiar.removeAttribute("disabled");
+  if (btnLimpiar) btnLimpiar.removeAttribute("disabled");
+  if (!ulListado) return; // Salir si el elemento de la lista no existe
 
-  //vacío el div ulistado
-  document.getElementById("ulListado").innerHTML = "";
+  ulListado.innerHTML = ""; // Limpiar contenido anterior
 
-  // creo una variable con el contenido de ulistado
-  var lista = document.getElementById("ulListado");
+  arr.forEach((data, index) => {
+    // El segundo parámetro de forEach es el índice
+    const listItem = document.createElement("li");
+    const dayIndexInYearArr = index; // Usar el índice del forEach que es más fiable que indexOf en arrays de objetos
 
-  // para cada elemento del array ejecuto una función anónima que crea un li linew y lo llena con el contenido
-  arr.forEach(
-    function (data) {
-      let linew = document.createElement("li");
+    const currentWeekDayName = getDayName(data.isDate.getDay());
 
-      getDayName(data.isDate.getDay());
+    const contenidoP = document.createElement("p");
+    contenidoP.innerHTML = `${dayIndexInYearArr} días: ${currentWeekDayName}, ${data.isDate.getDate()}/${
+      data.isDate.getMonth() + 1
+    }/${data.isDate.getFullYear()}`;
+    listItem.appendChild(contenidoP);
 
-      // formateo la línea standard
-      var contenido = document.createElement("p");
-      contenido.innerHTML = `${yearArr.indexOf(
-        data
-      )} días:     ${weekDayName}, ${data.isDate.getDate()}/${
-        data.isDate.getMonth() + 1
-      }/${data.isDate.getFullYear()} `;
+    if (data.motivo && data.motivo !== "") {
+      const infoFeriadoP = document.createElement("p");
+      infoFeriadoP.innerHTML = `<a href="${data.info}" target="_blank" rel="noopener noreferrer">${data.motivo}</a> (${data.tipo})`;
+      listItem.appendChild(infoFeriadoP);
+      listItem.classList.add("holidayLi"); // Clase específica para feriados
+    }
 
-      linew.appendChild(contenido);
+    // Lógica de visibilidad y formato
+    if (dayIndexInYearArr === 0) {
+      listItem.classList.add("invisible");
+    }
 
-      // formateo de feriados
-      if (data.motivo != "") {
-        let infoFeriado = document.createElement("p");
-        infoFeriado.innerHTML = `<a href="${data.info}"target="_blank"> ${data.motivo}</a> (${data.tipo})`;
-        linew.appendChild(infoFeriado);
-        //linew.className = "holidayLi";
-        linew.classList.add("weekendLi");
-      }
+    if (dayIndexInYearArr % 10 === 0 && dayIndexInYearArr !== 0) {
+      // No añadir botón al día 0
+      const btnDesplegar = document.createElement("button");
+      btnDesplegar.setAttribute(
+        "onclick",
+        `desplegarItems(${dayIndexInYearArr})`
+      );
+      btnDesplegar.setAttribute("id", `btnDesplegar${dayIndexInYearArr}`);
+      btnDesplegar.classList.add("btnDesplegar");
 
-      lista.appendChild(linew);
+      const imgDesplegar = document.createElement("img");
+      imgDesplegar.src = "desplegar.png"; // Asegúrate que esta imagen exista en la ruta correcta
+      imgDesplegar.alt = "desplegar";
+      imgDesplegar.width = 10;
+      btnDesplegar.appendChild(imgDesplegar);
+      listItem.appendChild(btnDesplegar);
+    } else if (
+      mostrable.indexOf(dayIndexInYearArr) === -1 &&
+      dayIndexInYearArr !== 0
+    ) {
+      listItem.classList.add("regularLi", "invisible");
+    } else if (dayIndexInYearArr !== 0) {
+      listItem.classList.add("smallLi");
+    }
 
-      // invisibilización del día de inicio de plazo
-      if (arr.indexOf(data) === 0) {
-        linew.classList.add("invisible");
-      }
+    if (currentWeekDayName === "Sábado" || currentWeekDayName === "Domingo") {
+      listItem.classList.add("weekendLi");
+    }
 
-      // formateo de múltiplos de 10 días y del día 1
-      if (arr.indexOf(data) % 10 === 0) {
-        //linew.classList.add("boldLi");
-        //creo un botón para desplegar los siguientes 10 elementos
-        let indexBtn = arr.indexOf(data);
+    ulListado.appendChild(listItem);
+  });
+}
 
-        let btnDesplegar = document.createElement("button");
-        btnDesplegar.setAttribute("onclick", `desplegarItems(${indexBtn})`);
-        btnDesplegar.setAttribute("id", `btnDesplegar${indexBtn}`);
-        btnDesplegar.setAttribute("class", "btnDesplegar");
-
-        btnDesplegar.innerHTML = `<img id="imgDesplegar" src="desplegar.png" alt="desplegar" width="10">`;
-        linew.appendChild(btnDesplegar);
-      } else if (mostrable.indexOf(arr.indexOf(data)) === -1) {
-        // si no es múltiplo de 10 y no está en el array mostrable
-        linew.className = "regularLi, invisible";
-      } else {
-        //si no es múltiplo de 10 y SÍ está en el array mostrable, le saco la class invisible y reduzco la font
-        linew.classList.add("smallLi");
-      }
-
-      // formateo de Sábados y Domingos
-      if (weekDayName == "Sábado" || weekDayName == "Domingo") {
-        linew.classList.add("weekendLi");
-      }
-    } //cierra la función anónima
-  ); //cierra el forEach;
-} // cierra agregarElementos
-
-// despliegue de ítems adyacentes al múltiplo de 10
+/**
+ * Muestra más ítems en la lista (lógica de UI para desplegar).
+ * @param {number} indice El índice base desde el cual mostrar más ítems.
+ */
 function desplegarItems(indice) {
-  //completo el array mostrable el indice de los días que tengo que togglear
-  for (let i = indice; i < indice + 10; i++) {
-    //console.log(yearArr[i]);
-    mostrable.push(i);
+  // Añadir los próximos 9 días (del indice+1 al indice+9) al array 'mostrable'
+  // sin duplicados y asegurándose de no exceder los límites de yearArr.
+  for (let i = 1; i < 10; i++) {
+    const itemIndexToShow = indice + i;
+    if (
+      itemIndexToShow < yearArr.length &&
+      mostrable.indexOf(itemIndexToShow) === -1
+    ) {
+      mostrable.push(itemIndexToShow);
+    }
   }
-
-  agregarElementos(yearArr);
+  // Reordenar 'mostrable' puede ser útil si el orden importa para otra lógica, aunque aquí no parece crucial.
+  // mostrable.sort((a, b) => a - b);
+  agregarElementos(yearArr); // Re-renderizar la lista con los nuevos ítems visibles
 }
 
+/**
+ * Limpia el listado y resetea el estado de visibilidad.
+ */
 function limpiarListado() {
-  mostrable = [2, 3, 4, 5, 6, 7, 8, 9];
-  document.getElementById("ulListado").innerHTML =
-    '<img id="imgPlazos" src="plazos-tribunal.jpg" alt="Plazos Tribunal"><br></br>';
-  btnLimpiar.disabled = true;
+  mostrable = [2, 3, 4, 5, 6, 7, 8, 9]; // Resetear al estado inicial
+  if (ulListado) {
+    ulListado.innerHTML =
+      '<img id="imgPlazos" src="plazos-tribunal.jpg" alt="Plazos Tribunal"><br></br>'; // Asegúrate que esta imagen exista
+  }
+  if (btnLimpiar) btnLimpiar.disabled = true;
+  // También podrías limpiar el input de fecha si lo deseas:
+  // const startDateInputEl = document.getElementById("startDate");
+  // if (startDateInputEl) startDateInputEl.value = "";
 }
+
+// Para que desplegarItems sea accesible globalmente si se usa en `onclick` en HTML generado dinámicamente
+window.desplegarItems = desplegarItems;
