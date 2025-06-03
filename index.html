@@ -1,23 +1,50 @@
+
+<!DOCTYPE html>
+<html lang="es"> {/* Cambiado a "es" para español */}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {/* La siguiente meta es para desarrollo local si tu API está en http y tu sitio en https, o viceversa.
+        Para Vercel (que usa HTTPS), si la API externa es HTTP, esto podría ser relevante.
+        Sin embargo, la API nolaborables.com.ar es HTTPS, por lo que 'upgrade-insecure-requests'
+        es menos crítico en ese caso específico, pero es una buena práctica general de seguridad. */}
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <link href="styles.css" rel="stylesheet" type="text/css">
+    <title>Contador de Plazos</title>
+</head>
 <body>
+
     <div id="app">
         <h1>Contador de Plazos</h1>
-        <div class="app-controls-group">
+        <div class="app-controls-group"> {/* Contenedor para los controles principales */}
             <label for="startDate">Inicio:</label>
-            <input id="startDate" type="date"> 
+            <input id="startDate" type="date"> {/* ÚNICO input con id="startDate" */}
             <button id="btnCalcular">Calcular</button>
-            <button id="btnLimpiar" disabled>Limpiar</button>
+            <button id="btnLimpiar" disabled>Limpiar</button> {/* onclick se maneja en main.js */}
         </div>
-    </div> <div id="ulListado"> <img id="imgPlazos" src="plazos-tribunal.jpg" alt="Plazos Tribunal">
-        </div>
+    </div>
 
+    {/* Cambiado a <ul> por semántica, ya que contendrá <li> */}
+    <ul id="ulListado">
+        {/* Imagen de placeholder inicial */}
+        <img id="imgPlazos" src="plazos-tribunal.jpg" alt="Plazos del Tribunal">
+        {/* El <br> de abajo es opcional, el espaciado se puede manejar mejor con CSS (ej. margin en la imagen) */}
+        {/* <br> */}
+        {/* Esta lista se llena dinámicamente con JavaScript */}
+    </ul>
+
+    {/* Scripts al final del body para un mejor rendimiento de carga percibido */}
+    {/* Moment.js para establecer la fecha por defecto (puedes reemplazarlo con JS nativo si lo prefieres) */}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
-        // Este script ahora se ejecuta después de que input#startDate esté definido
-        const startDateInput = document.getElementById('startDate');
-        if (startDateInput) { // Buena práctica verificar que existe
-            startDateInput.value = moment().format('YYYY-MM-DD');
+        // Establece la fecha de hoy por defecto en el input startDate
+        const startDateInputForDefault = document.getElementById('startDate');
+        if (startDateInputForDefault) {
+            startDateInputForDefault.value = moment().format('YYYY-MM-DD');
         }
     </script>
+
     <script src="./main.js"></script>
 
 </body>
