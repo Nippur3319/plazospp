@@ -10,50 +10,47 @@ export default async function handler(request, response) {
   }
 
   const incluirOpcional = incluir === "opcional";
-  const apiUrl = `https://nolaborables.com.ar/api/v2/feriados/${anio}${
-    incluirOpcional ? "?incluir=opcional" : ""
-  }`;
+  const apiUrl = `https://api.argentinadatos.com/v1/feriados/${anio}`;
 
   try {
     console.log(`[PROXY] Solicitando a URL externa: ${apiUrl}`);
     const apiRespuestaExterna = await fetch(apiUrl);
 
-    // --- Sección de Depuración Adicional ---
     console.log(`[PROXY] Status de API externa: ${apiRespuestaExterna.status}`);
-    console.log(
-      `[PROXY] StatusText de API externa: ${apiRespuestaExterna.statusText}`
-    );
-    console.log(
-      `[PROXY] Content-Type de API externa: ${apiRespuestaExterna.headers.get(
-        "content-type"
-      )}`
-    );
-
-    // Obtenemos la respuesta como TEXTO para poder verla, sea JSON o HTML
     const respuestaComoTexto = await apiRespuestaExterna.text();
-    console.log(
-      `[PROXY] Respuesta TEXTUAL de API externa: ${respuestaComoTexto}`
-    );
-    // --- Fin Sección de Depuración Adicional ---
 
-    // Ahora, verificamos si la respuesta de la API externa fue exitosa DESPUÉS de obtener el texto
     if (!apiRespuestaExterna.ok) {
-      console.error(
-        `[PROXY] Error de la API externa (status no OK): ${apiRespuestaExterna.status}. Respuesta: ${respuestaComoTexto}`
+      console.warn(
+        `[PROXY] Error de la API externa (status ${apiRespuestaExterna.status}) al obtener feriados de ${anio}. Retornando lista vacía.`
       );
-      // Intentamos devolver la respuesta textual si no es JSON, o un error genérico
-      // No intentamos parsear como JSON aquí si ya sabemos que no es 'ok', podría ser HTML de error
-      return response
-        .status(apiRespuestaExterna.status)
-        .send(
-          respuestaComoTexto ||
-            `Error ${apiRespuestaExterna.status} de la API externa.`
-        );
+      response.setHeader("Access-Control-Allow-Origin", "*");
+      response.setHeader("Access-Control-Allow-Methods", "GET");
+      return response.status(200).json([]);
     }
 
-    // Si la respuesta fue 'ok' (status 200-299), AHORA intentamos convertir el texto a JSON
-    // Este es el punto donde originalmente ocurría el error si el texto no era JSON válido.
-    const datos = JSON.parse(respuestaComoTexto);
+    const datosOriginales = JSON.parse(respuestaComoTexto);
+
+    // Filtrar si no se solicitan opcionales (no_laborable)
+    let datosFiltrados = datosOriginales;
+    if (!incluirOpcional) {
+      datosFiltrados = datosOriginales.filter(item => item.tipo !== 'no_laborable');
+    }
+
+    // Mapear al formato esperado por el frontend
+    const datosMapeados = datosFiltrados.map(item => {
+      const partes = item.fecha.split('-');
+      const mesFeriado = parseInt(partes[1], 10);
+      const diaFeriado = parseInt(partes[2], 10);
+      
+      return {
+        dia: diaFeriado,
+        mes: mesFeriado,
+        motivo: item.nombre,
+        tipo: item.tipo,
+        info: "https://argentinadatos.com",
+        id: item.nombre.toLowerCase().replace(/[^a-z0-9]/g, "-")
+      };
+    });
 
     // Cabeceras CORS
     response.setHeader("Access-Control-Allow-Origin", "*");
@@ -62,19 +59,15 @@ export default async function handler(request, response) {
     console.log(
       `[PROXY] Enviando datos JSON procesados para el año ${anio} al cliente.`
     );
-    response.status(200).json(datos);
+    response.status(200).json(datosMapeados);
   } catch (error) {
-    // Este bloque catch ahora capturará errores como el de JSON.parse si 'respuestaComoTexto'
-    // (incluso con status ok) no es un JSON válido, o cualquier otro error de ejecución.
     console.error(
-      "[PROXY] Error interno en la función (puede ser al parsear JSON o error de ejecución):",
+      `[PROXY] Error al procesar la respuesta para el año ${anio}:`,
       error.message
     );
-    console.error("[PROXY] Stack del error:", error.stack); // Muestra más detalles del error
-
-    response.status(500).json({
-      error: "Error interno en el servidor proxy al procesar la respuesta.",
-      details: error.message,
-    });
+    response.setHeader("Access-Control-Allow-Origin", "*");
+    response.setHeader("Access-Control-Allow-Methods", "GET");
+    response.status(200).json([]);
   }
 }
+
